@@ -1,4 +1,6 @@
+import java.util.ArrayList;
+
 public class MFD {
-    public String username;
-    public UFD ufd;
+    public ArrayList<MFDItem> mfdlist=new ArrayList<>();
+
 }
