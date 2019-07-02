@@ -17,17 +17,37 @@ public class GUI {
     private Vector<String> columnNname=new Vector();
     private Vector<Vector> data=new Vector();
     private JPopupMenu popupMenu=new JPopupMenu();
+
     public GUI()
     {
         columnNname.add("名称");
         columnNname.add("类型");
         DefaultTableModel model=new DefaultTableModel(data,columnNname);
+
+        //右键菜单新建文件夹
         JMenuItem createDir=new JMenuItem("新建文件夹");
         popupMenu.add(createDir);
         createDir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 createDir();
+            }
+        });
+
+        //右键菜单重命名
+        JMenuItem rename=new JMenuItem("重命名");
+        rename.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+        //右键菜单删除
+        JMenuItem delete=new JMenuItem("删除");
+        delete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
             }
         });
         table1.setModel(model);
@@ -38,6 +58,19 @@ public class GUI {
                 super.mouseClicked(e);
                 if (e.getButton()==MouseEvent.BUTTON3)
                 {
+                    popupMenu.removeAll();
+                    int focusedRowIndex=table1.rowAtPoint(e.getPoint());
+                    if(focusedRowIndex!=-1)
+                    {
+                        popupMenu.add(createDir);
+                        popupMenu.add(rename);
+                        popupMenu.add(delete);
+
+                    }
+                    else
+                    {
+                        popupMenu.add(createDir);
+                    }
                     popupMenu.show(table1,e.getX(),e.getY());
                 }
             }
