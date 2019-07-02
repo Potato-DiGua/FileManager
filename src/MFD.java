@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 public class MFD {
-    public ArrayList<MFDItem> mfdlist=new ArrayList<>();
+    public static ArrayList<UFD> ufdlist=new ArrayList<>();
+
 
 }
