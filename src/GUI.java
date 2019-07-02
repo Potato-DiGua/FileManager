@@ -22,7 +22,13 @@ public class GUI {
     {
         columnNname.add("名称");
         columnNname.add("类型");
-        DefaultTableModel model=new DefaultTableModel(data,columnNname);
+        DefaultTableModel model=new DefaultTableModel(data,columnNname){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+
+            }
+        };
 
         //右键菜单新建文件夹
         JMenuItem createDir=new JMenuItem("新建文件夹");
@@ -56,6 +62,7 @@ public class GUI {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
+
                 if (e.getButton()==MouseEvent.BUTTON3)
                 {
                     popupMenu.removeAll();
@@ -73,6 +80,16 @@ public class GUI {
                     }
                     popupMenu.show(table1,e.getX(),e.getY());
                 }
+                else if(e.getButton()==MouseEvent.BUTTON1&&e.getClickCount()==2)
+                {
+                    int selectedRow=table1.getSelectedRow();
+                    if(selectedRow!=-1)
+                    {
+                        String str=table1.getValueAt(selectedRow,0).toString();
+                        System.out.println(str);
+                        open(str);
+                    }
+                }
             }
         });
         button1.addActionListener(new ActionListener() {
@@ -82,9 +99,39 @@ public class GUI {
             }
         });
     }
+    private void open(String name)
+    {
+        for(UFD u:MFD.ufdlist)
+        {
+            if(u.username==name)
+            {
+                Vector<String> fname=new Vector<>();
+                for(FCB f:u.filelist)
+                    fname.add(f.filename);
+
+                refreshtList(fname,"文件");
+            }
+        }
+    }
+    private void refreshtList(Vector<String> namelist,String type)
+    {
+        data.clear();
+        for(String name:namelist)
+        {
+            Vector cell=new Vector();
+            cell.add(name);
+            cell.add(type);
+            data.add(cell);
+        }
+        table1.updateUI();
+
+    }
     private void createDir()
     {
         String name=JOptionPane.showInputDialog("文件夹名称");
+        if(name==null||name.isEmpty())
+            return;
+        MFD.ufdlist.add(new UFD(name));
         Vector cell=new Vector();
         cell.add(name);
         cell.add("文件夹");
@@ -92,6 +139,7 @@ public class GUI {
         table1.updateUI();
     }
     public static void main(String[] args) {
+        //设置UI风格为当前系统风格
         try {
 
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -100,6 +148,7 @@ public class GUI {
                 | UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
+
         JFrame frame = new JFrame("文件管理");
         frame.setContentPane(new GUI().rootpane);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -107,5 +156,4 @@ public class GUI {
         frame.pack();
         frame.setVisible(true);
     }
-
 }
