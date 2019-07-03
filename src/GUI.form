@@ -23,6 +23,7 @@
               <autoCreateRowSorter value="false"/>
               <fillsViewportHeight value="true"/>
               <focusTraversalPolicyProvider value="false"/>
+              <font size="18"/>
               <showHorizontalLines value="false"/>
               <showVerticalLines value="false"/>
             </properties>

@@ -19,7 +19,9 @@
         <children>
           <component id="c354a" class="javax.swing.JTextArea" binding="textArea1" default-binding="true">
             <constraints/>
-            <properties/>
+            <properties>
+              <font name="Droid Sans Mono" size="16" style="0"/>
+            </properties>
           </component>
         </children>
       </scrollpane>
