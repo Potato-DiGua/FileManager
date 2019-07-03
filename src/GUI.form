@@ -20,7 +20,11 @@
           <component id="581cd" class="javax.swing.JTable" binding="table1">
             <constraints/>
             <properties>
+              <autoCreateRowSorter value="false"/>
               <fillsViewportHeight value="true"/>
+              <focusTraversalPolicyProvider value="false"/>
+              <showHorizontalLines value="false"/>
+              <showVerticalLines value="false"/>
             </properties>
             <clientProperties>
               <JTable.autoStartsEdit class="java.lang.Boolean" value="false"/>

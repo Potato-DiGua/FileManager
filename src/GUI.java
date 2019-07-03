@@ -1,5 +1,6 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.event.*;
 import java.util.Vector;
 
@@ -29,7 +30,10 @@ public class GUI {
 
             }
         };
-
+        //设置排序
+        /*
+        final TableRowSorter sorter = new TableRowSorter(model);
+        table1.setRowSorter(sorter);*/
         //右键菜单新建文件夹
         JMenuItem createDir = new JMenuItem("新建文件夹");
         popupMenu.add(createDir);
@@ -76,9 +80,9 @@ public class GUI {
                     }
                     popupMenu.show(table1, e.getX(), e.getY());
                 } else if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-                    int selectedRow = table1.getSelectedRow();
-                    if (selectedRow != -1) {
-                        String name = table1.getValueAt(selectedRow, 0).toString();
+                    int focusedRowIndex = table1.rowAtPoint(e.getPoint());
+                    if (focusedRowIndex != -1) {
+                        String name = table1.getValueAt(focusedRowIndex, 0).toString();
                         if (MFD.path.size() == 1)//双击打开文件夹
                         {
                             open(name);
@@ -87,6 +91,8 @@ public class GUI {
                         }
 
                     }
+                    else
+                        table1.clearSelection();
                 }
             }
         });
@@ -195,24 +201,6 @@ public class GUI {
             }
         }
         refreshList();
-        /*
-        JFrame frame = new JFrame(name);
-        CreatFile cf = new CreatFile();
-        frame.setContentPane(cf.mpanel);
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                super.windowClosed(e);
-                String text = cf.getContent();
-                System.out.println(text);
-            }
-        });
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
-        frame.pack();
-        frame.setVisible(true);
-
-         */
     }
 
     public static void main(String[] args) {
