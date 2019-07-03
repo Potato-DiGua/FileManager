@@ -10,13 +10,11 @@ public class UFD {
     }
 
     public int existFile(String filepath,String filename) {//文件是否存在
-		/*
-		if(filepath中包含filename) {
-			return 1;
-		}else
-			return 0;
-
-		 */
+    	for(FCB i:filelist) {
+            if(i.filepath.equals(filepath)&&i.filename.equals(filename)) {
+                return 1;
+            }
+        }
         return 0;
     }
     public FCB createFile(String filepath){//创建文件
@@ -36,14 +34,16 @@ public class UFD {
     }
     public void deleteFile(String filepath,String filename) {//删除文件
 
-        for(FCB i:filelist) {
-            if(i.filepath.equals(filepath)&&i.filename.equals(filename)) {
+        for(int i=0;i<filelist.size();i++) {
+            if(filelist.get(i).filepath.equals(filepath)&&filelist.get(i).filename.equals(filename)) {
+            	filelist.remove(i);
+            	i--;
                 //删除
             }
         }
         //文件列表删除FCB
     }
-    public int xiugaiFile(String filepath,String filename,String words) {//words为修改后的内容
+    public int xiugaiFilewords(String filepath,String filename,String words) {//words为修改后的内容
         for(FCB i:filelist) {
             if(i.filepath.equals(filepath)&&i.filename.equals(filename)) {
                 if(i.shuxing.equals("r")) {//只读状况下不允许写入
@@ -56,10 +56,20 @@ public class UFD {
         }
         return -1;
     }
+    public int xiugaiFiletype(String filepath,String filename,String type) {//修改文件类型，只读r，只写w，都行a
+    	for(FCB i:filelist) {
+            if(i.filepath.equals(filepath)&&i.filename.equals(filename)) {
+               i.shuxing=type;
+            }
+        }
+        return -1;
+    }
     public String openFile(String filepath,String filename) {//打开文件
         for(FCB i:filelist) {
             if(i.filepath.equals(filepath)&&i.filename.equals(filename)) {
-                return i.neirong;
+            	if(i.shuxing.equals("a")||i.shuxing.equals("r")) {
+            		return i.neirong;
+            	}
             }
         }
         return "";
