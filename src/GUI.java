@@ -1,6 +1,5 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -13,13 +12,18 @@ public class GUI {
     private JPanel rootpane;
     private JTable table1;
     private JScrollPane jsp;
-    private JButton button1;
+    private JButton reButton;
+    private JLabel pathLabel;
+    private JPanel topPanel;
     private Vector<String> columnNname=new Vector();
     private Vector<Vector> data=new Vector();
     private JPopupMenu popupMenu=new JPopupMenu();
 
     public GUI()
     {
+        //设置当前路径为根目录
+        MFD.openPath("root");
+
         columnNname.add("名称");
         columnNname.add("类型");
         DefaultTableModel model=new DefaultTableModel(data,columnNname){
@@ -33,28 +37,19 @@ public class GUI {
         //右键菜单新建文件夹
         JMenuItem createDir=new JMenuItem("新建文件夹");
         popupMenu.add(createDir);
-        createDir.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        createDir.addActionListener(e -> {
                 createDir();
-            }
         });
 
         //右键菜单重命名
         JMenuItem rename=new JMenuItem("重命名");
-        rename.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        rename.addActionListener(e -> {
 
-            }
         });
         //右键菜单删除
         JMenuItem delete=new JMenuItem("删除");
-        delete.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        delete.addActionListener(e -> {
 
-            }
         });
         table1.setModel(model);
         //右键菜单显示
@@ -66,43 +61,57 @@ public class GUI {
                 if (e.getButton()==MouseEvent.BUTTON3)
                 {
                     popupMenu.removeAll();
-                    int focusedRowIndex=table1.rowAtPoint(e.getPoint());
+                    int focusedRowIndex= table1.rowAtPoint(e.getPoint());
                     if(focusedRowIndex!=-1)
                     {
-                        popupMenu.add(createDir);
+                        if(MFD.path.size()==1)
+                            popupMenu.add(createDir);
                         popupMenu.add(rename);
                         popupMenu.add(delete);
 
                     }
                     else
                     {
-                        popupMenu.add(createDir);
+                        if(MFD.path.size()==1)
+                            popupMenu.add(createDir);
                     }
                     popupMenu.show(table1,e.getX(),e.getY());
                 }
                 else if(e.getButton()==MouseEvent.BUTTON1&&e.getClickCount()==2)
                 {
-                    int selectedRow=table1.getSelectedRow();
+                    int selectedRow= table1.getSelectedRow();
                     if(selectedRow!=-1)
                     {
-                        String str=table1.getValueAt(selectedRow,0).toString();
+                        String str= table1.getValueAt(selectedRow,0).toString();
                         System.out.println(str);
                         open(str);
                     }
                 }
             }
         });
-        button1.addActionListener(new ActionListener() {
+        //返回按钮
+        reButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                createDir();
+                Vector<String> dirname=new Vector<>();
+                for(UFD u:MFD.ufdlist)
+                {
+                    dirname.add(u.username);
+                }
+                MFD.rePath();
+                refreshtList(dirname,"文件夹");
+                reButton.setEnabled(false);
             }
         });
+
+        reButton.setEnabled(false);
+        refreshpath();
     }
     private void open(String name)
     {
         for(UFD u:MFD.ufdlist)
         {
+            MFD.openPath(u.username);
             if(u.username==name)
             {
                 Vector<String> fname=new Vector<>();
@@ -112,6 +121,14 @@ public class GUI {
                 refreshtList(fname,"文件");
             }
         }
+        reButton.setEnabled(true);
+    }
+    private void refreshpath()
+    {
+        String path="";
+        for(String dir:MFD.path)
+            path+="/"+dir;
+        pathLabel.setText(path);
     }
     private void refreshtList(Vector<String> namelist,String type)
     {
@@ -124,6 +141,7 @@ public class GUI {
             data.add(cell);
         }
         table1.updateUI();
+        refreshpath();
 
     }
     private void createDir()
@@ -156,4 +174,5 @@ public class GUI {
         frame.pack();
         frame.setVisible(true);
     }
+
 }
