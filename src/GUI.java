@@ -1,9 +1,6 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.Vector;
 
 public class GUI {
@@ -15,18 +12,17 @@ public class GUI {
     private JButton reButton;
     private JLabel pathLabel;
     private JPanel topPanel;
-    private Vector<String> columnNname=new Vector();
-    private Vector<Vector> data=new Vector();
-    private JPopupMenu popupMenu=new JPopupMenu();
+    private Vector<String> columnNname = new Vector();
+    private Vector<Vector> data = new Vector();
+    private JPopupMenu popupMenu = new JPopupMenu();
 
-    public GUI()
-    {
+    public GUI() {
         //设置当前路径为根目录
         MFD.openPath("root");
 
         columnNname.add("名称");
         columnNname.add("类型");
-        DefaultTableModel model=new DefaultTableModel(data,columnNname){
+        DefaultTableModel model = new DefaultTableModel(data, columnNname) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -35,21 +31,26 @@ public class GUI {
         };
 
         //右键菜单新建文件夹
-        JMenuItem createDir=new JMenuItem("新建文件夹");
+        JMenuItem createDir = new JMenuItem("新建文件夹");
         popupMenu.add(createDir);
         createDir.addActionListener(e -> {
-                createDir();
+            createDir();
         });
 
         //右键菜单重命名
-        JMenuItem rename=new JMenuItem("重命名");
+        JMenuItem rename = new JMenuItem("重命名");
         rename.addActionListener(e -> {
 
         });
         //右键菜单删除
-        JMenuItem delete=new JMenuItem("删除");
+        JMenuItem delete = new JMenuItem("删除");
         delete.addActionListener(e -> {
 
+        });
+        //右键新建文件
+        JMenuItem createFile = new JMenuItem("新建文件");
+        createFile.addActionListener(e -> {
+            create_File();
         });
         table1.setModel(model);
         //右键菜单显示
@@ -58,104 +59,162 @@ public class GUI {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
-                if (e.getButton()==MouseEvent.BUTTON3)
-                {
+                if (e.getButton() == MouseEvent.BUTTON3) {
                     popupMenu.removeAll();
-                    int focusedRowIndex= table1.rowAtPoint(e.getPoint());
-                    if(focusedRowIndex!=-1)
-                    {
-                        if(MFD.path.size()==1)
+                    int focusedRowIndex = table1.rowAtPoint(e.getPoint());
+                    if (focusedRowIndex != -1) {//是否选中文件或文件夹
+                        if (MFD.path.size() == 1)//只在根目录显示
                             popupMenu.add(createDir);
                         popupMenu.add(rename);
                         popupMenu.add(delete);
 
-                    }
-                    else
-                    {
-                        if(MFD.path.size()==1)
+                    } else {
+                        if (MFD.path.size() == 1)//只在根目录显示
                             popupMenu.add(createDir);
+                        else//在二级目录显示
+                            popupMenu.add(createFile);
                     }
-                    popupMenu.show(table1,e.getX(),e.getY());
-                }
-                else if(e.getButton()==MouseEvent.BUTTON1&&e.getClickCount()==2)
-                {
-                    int selectedRow= table1.getSelectedRow();
-                    if(selectedRow!=-1)
-                    {
-                        String str= table1.getValueAt(selectedRow,0).toString();
-                        System.out.println(str);
-                        open(str);
+                    popupMenu.show(table1, e.getX(), e.getY());
+                } else if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
+                    int selectedRow = table1.getSelectedRow();
+                    if (selectedRow != -1) {
+                        String name = table1.getValueAt(selectedRow, 0).toString();
+                        if (MFD.path.size() == 1)//双击打开文件夹
+                        {
+                            open(name);
+                        } else {//双击打开文件
+                            openFile(name);
+                        }
+
                     }
                 }
             }
         });
         //返回按钮
-        reButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Vector<String> dirname=new Vector<>();
-                for(UFD u:MFD.ufdlist)
-                {
-                    dirname.add(u.username);
-                }
-                MFD.rePath();
-                refreshtList(dirname,"文件夹");
-                reButton.setEnabled(false);
-            }
+        reButton.addActionListener(e -> {
+            MFD.rePath();
+            refreshList();
+            reButton.setEnabled(false);
         });
 
         reButton.setEnabled(false);
         refreshpath();
     }
-    private void open(String name)
-    {
-        for(UFD u:MFD.ufdlist)
-        {
-            MFD.openPath(u.username);
-            if(u.username==name)
-            {
-                Vector<String> fname=new Vector<>();
-                for(FCB f:u.filelist)
-                    fname.add(f.filename);
 
-                refreshtList(fname,"文件");
-            }
-        }
+    private void open(String name) {
+        MFD.openPath(name);
+
+        refreshList();
+
         reButton.setEnabled(true);
     }
-    private void refreshpath()
-    {
-        String path="";
-        for(String dir:MFD.path)
-            path+="/"+dir;
-        pathLabel.setText(path);
+
+    private void openFile(String name) {
+        String content="";
+        UFD ufd=null;
+        for (UFD u : MFD.ufdlist) {
+            if (u.username.equals(MFD.path.get(1))) {
+                content=u.openFile(name);
+                ufd=u;
+            }
+            break;
+        }
+
+        fileEditWindow(name,content,ufd);
     }
-    private void refreshtList(Vector<String> namelist,String type)
+    private void fileEditWindow(String name,String content,UFD ufd)
     {
+        if (ufd==null)
+            return;
+        JFrame frame = new JFrame(name);
+        CreatFile cf = new CreatFile(content);
+        frame.setContentPane(cf.mpanel);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                super.windowClosed(e);
+                String text = cf.getContent();
+                System.out.println(text);
+                ufd.xiugaiFilewords(name,text);
+            }
+        });
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    private void refreshpath() {
+        pathLabel.setText(MFD.getPath());
+    }
+
+    private void refreshList() {
         data.clear();
-        for(String name:namelist)
-        {
-            Vector cell=new Vector();
-            cell.add(name);
-            cell.add(type);
-            data.add(cell);
+        if (MFD.path.size() == 1) {
+            for (UFD u : MFD.ufdlist) {
+                Vector cell = new Vector();
+                cell.add(u.username);
+                cell.add("文件夹");
+                data.add(cell);
+            }
+        } else {
+            for (UFD u : MFD.ufdlist) {
+                if (u.username.equals(MFD.path.get(1))) {
+                    for (FCB f : u.filelist) {
+                        Vector cell = new Vector();
+                        cell.add(f.filename);
+                        cell.add("文件");
+                        data.add(cell);
+                    }
+                    break;
+                }
+            }
         }
         table1.updateUI();
         refreshpath();
 
     }
-    private void createDir()
-    {
-        String name=JOptionPane.showInputDialog("文件夹名称");
-        if(name==null||name.isEmpty())
+
+    private void createDir() {
+        String name = JOptionPane.showInputDialog("文件夹名称");
+        if (name == null || name.isEmpty())
             return;
         MFD.ufdlist.add(new UFD(name));
-        Vector cell=new Vector();
+        Vector cell = new Vector();
         cell.add(name);
         cell.add("文件夹");
         data.add(cell);
         table1.updateUI();
     }
+
+    private void create_File() {
+        for (UFD u : MFD.ufdlist) {
+            if (u.username.equals(MFD.path.get(1))) {
+                u.filelist.add(u.createFile(MFD.getPath()));
+                break;
+            }
+        }
+        refreshList();
+        /*
+        JFrame frame = new JFrame(name);
+        CreatFile cf = new CreatFile();
+        frame.setContentPane(cf.mpanel);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                super.windowClosed(e);
+                String text = cf.getContent();
+                System.out.println(text);
+            }
+        });
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.pack();
+        frame.setVisible(true);
+
+         */
+    }
+
     public static void main(String[] args) {
         //设置UI风格为当前系统风格
         try {

@@ -11,7 +11,7 @@ public class UFD {
 
     public int existFile(String filepath,String filename) {//文件是否存在
     	for(FCB i:filelist) {
-            if(i.filepath.equals(filepath)&&i.filename.equals(filename)) {
+            if(i.filename.equals(filename)) {
                 return 1;
             }
         }
@@ -27,9 +27,7 @@ public class UFD {
                 //在文件列表中创建新FCB
                 return file;
             }
-            return null;
         }
-
 
     }
     public void deleteFile(String filepath,String filename) {//删除文件
@@ -43,9 +41,9 @@ public class UFD {
         }
         //文件列表删除FCB
     }
-    public int xiugaiFilewords(String filepath,String filename,String words) {//words为修改后的内容
+    public int xiugaiFilewords(String filename,String words) {//words为修改后的内容
         for(FCB i:filelist) {
-            if(i.filepath.equals(filepath)&&i.filename.equals(filename)) {
+            if(i.filename.equals(filename)) {
                 if(i.shuxing.equals("r")) {//只读状况下不允许写入
                     return -1;
                 }else
@@ -64,9 +62,9 @@ public class UFD {
         }
         return -1;
     }
-    public String openFile(String filepath,String filename) {//打开文件
+    public String openFile(String filename) {//打开文件
         for(FCB i:filelist) {
-            if(i.filepath.equals(filepath)&&i.filename.equals(filename)) {
+            if(i.filename.equals(filename)) {
             	if(i.shuxing.equals("a")||i.shuxing.equals("r")) {
             		return i.neirong;
             	}
