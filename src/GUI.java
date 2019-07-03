@@ -26,7 +26,7 @@ public class GUI {
 
         columnNname.add("名称");
         columnNname.add("类型");
-        model = new DefaultTableModel(data, columnNname); /*{
+        model = new DefaultTableModel(data, columnNname){
             @Override
             public boolean isCellEditable(int row, int column) {
 
@@ -36,8 +36,12 @@ public class GUI {
                     return false;
 
             }
-        };*/
-
+        };
+        table1.setModel(model);
+        DefaultCellEditor dfc=new DefaultCellEditor(jtf);
+        dfc.setClickCountToStart(1);
+        table1.setDefaultEditor(table1.getColumnClass(0),dfc);
+        /*
         table1=new JTable(model);
         table1.setPreferredSize(new Dimension(300,400));
         jsp.setViewportView(table1);
@@ -48,7 +52,7 @@ public class GUI {
         dce.setClickCountToStart(1);
 
         table1.getColumn("名称").setCellEditor(dce);
-
+        */
         //设置排序
         /*
         final TableRowSorter sorter = new TableRowSorter(model);
@@ -135,7 +139,7 @@ public class GUI {
                             popupMenu.add(createFile);
                     }
                     popupMenu.show(table1, e.getX(), e.getY());
-                }/*
+                }
                 else if(buttonid==MouseEvent.BUTTON1 && clickcount == 1){
 
                     int focusedRowIndex = table1.rowAtPoint(e.getPoint());
@@ -143,16 +147,21 @@ public class GUI {
                     if(focusedRowIndex==-1)
                         table1.clearSelection();
                     else
+                        jtf.selectAll();
+                    /*鼠标单击实现选中
+                    else
                     {
                         if(focusedColumnIndex==0)
                         {
                             table1.editCellAt(focusedRowIndex,focusedColumnIndex);
-                            jtf.selectAll();
+                            JTextField j=(JTextField) table1.getCellEditor().getTableCellEditorComponent(table1,
+                                    table1.getValueAt(focusedRowIndex,0),true,
+                                    focusedRowIndex,0);
+                            j.selectAll();
                         }
 
-                    }
+                    }*/
                 }
-                */
                 else if (buttonid == MouseEvent.BUTTON1 && clickcount == 2)
                 {
                     int focusedRowIndex = table1.rowAtPoint(e.getPoint());
