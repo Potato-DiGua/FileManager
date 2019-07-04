@@ -9,6 +9,7 @@ import javax.swing.tree.TreeModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Path;
 import java.util.Vector;
 
 public class GUI {
@@ -29,6 +30,7 @@ public class GUI {
     private DefaultTableModel model;
     private Color focuscolor=new Color(0xC6E2FF);
     private JTextField jtf=new JTextField();
+    private DefaultMutableTreeNode root;//文件树的根目录
     public GUI() {
         //设置当前路径为根目录
         MFD.openPath("root");
@@ -57,18 +59,6 @@ public class GUI {
         dfc.setClickCountToStart(1);
         table1.setDefaultEditor(table1.getColumnClass(0),dfc);
 
-        /*
-        table1=new JTable(model);
-        table1.setPreferredSize(new Dimension(300,400));
-        jsp.setViewportView(table1);
-        jsp.setPreferredSize(new Dimension(300,400));
-        table1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        jtf.setText("test");
-        DefaultCellEditor dce = new DefaultCellEditor(jtf);
-        dce.setClickCountToStart(1);
-
-        table1.getColumn("名称").setCellEditor(dce);
-        */
 
 
         //右键菜单新建文件夹
@@ -84,15 +74,78 @@ public class GUI {
         //右键菜单删除
         JMenuItem delete = new JMenuItem("删除");
         delete.addActionListener(e -> {
-
+            int row=table1.getSelectedRow();
+            if(row!=-1)
+            {
+                String name=table1.getValueAt(row,0).toString();
+                if(table1.getValueAt(row,1).toString().equals("文件夹"))
+                {
+                    UFD u=MFD.findUFDByname(name);
+                    if(u!=null)
+                        MFD.ufdlist.remove(u);
+                }
+                else
+                {
+                    UFD u=MFD.findUFDByname(MFD.path.get(1));
+                    if(u!=null)
+                        u.deleteFile(name);
+                }
+                refreshList();
+            }
         });
         //右键新建文件
         JMenuItem createFile = new JMenuItem("新建文件");
         createFile.addActionListener(e ->
             create_File()
         );
+        //右键打开文件
+        JMenuItem openFile = new JMenuItem("打开");
+        openFile.addActionListener(e ->{
+            int row=table1.getSelectedRow();
+            if(row!=-1)
+            {
+                String name=table1.getValueAt(row,0).toString();
+                if (MFD.path.size() == 1)//双击打开文件夹
+                {
+                    System.out.println(name);
+                    open(name);
+                } else {//双击打开文件
+                    openFile(name);
+                }
+            }
+
+        });
+
+        JMenuItem fileproperty = new JMenuItem("属性");
+
+        fileproperty.addActionListener(e ->{
+            int row=table1.getSelectedRow();
+            if(row!=-1)
+            {
+                String name=table1.getValueAt(row,0).toString();
+                if(MFD.path.size()==1)
+                {
+                    UFD u=MFD.findUFDByname(name);
+                    new FileProperty(rootpane,name,u,null, MFD.getPath()+"/"+name,u.property);
+                }
+                else
+                {
+                    UFD u=MFD.findUFDByname(MFD.path.get(1));
+                    FCB fcb=null;
+                    for(FCB f:u.filelist)
+                        if(f.filename.equals(name))
+                        {
+                            fcb=f;
+                            break;
+                        }
+                    new FileProperty(rootpane,name,u,fcb, MFD.getPath()+"/"+name,fcb.shuxing);
+                }
 
 
+
+            }
+
+        });
         /*
         table1.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
@@ -130,30 +183,27 @@ public class GUI {
                     //System.out.println(table1.getValueAt(row,col));
                     //System.out.println(table1.getValueAt(row,col));
                     if(MFD.path.size()==1)
-                        MFD.rename(MFD.ufdlist.get(row),model.getValueAt(row,col).toString());
-                    else
                     {
-                        UFD ufd=null;
-                        for (UFD u : MFD.ufdlist) {
+                        MFD.rename(MFD.ufdlist.get(row),model.getValueAt(row,col).toString());
+                        JOptionPane.showMessageDialog(null, "存在相同名字的文件,重命名失败", "提示", JOptionPane.ERROR_MESSAGE);
 
-                            if (u.username.equals(MFD.path.get(1))) {
-                                //content=u.openFile(name);
-                                ufd=u;
-                                break;
-                            }
-
-                        }
-                        if(ufd!=null)
-                        {
-                            System.out.println(row);
-                            FCB f=ufd.filelist.get(row);
-                            ufd.renameFile(f.filename,model.getValueAt(row,col).toString());
-                        }
                     }
+                    else {
+                        UFD ufd = MFD.findUFDByname(MFD.path.get(1));
+                        if (ufd != null) {
+                            //System.out.println(row);
+                            FCB f = ufd.filelist.get(row);
+                            if (ufd.renameFile(f.filename, model.getValueAt(row, col).toString()) == -1) {
+                                JOptionPane.showMessageDialog(null, "存在相同名字的文件,重命名失败", "提示", JOptionPane.ERROR_MESSAGE);
 
+                            }
+                        }
+
+
+                    }
+                    refreshList();
                 }
         });
-
         table1.addMouseListener(new MouseAdapter() {
             @Override
 
@@ -169,6 +219,7 @@ public class GUI {
                 if(focusedRowIndex==-1)//鼠标未选中 清空选中项 停止输入
                 {
                     table1.clearSelection();
+
                     if (table1.isEditing())
                         table1.getCellEditor().stopCellEditing();
                 }
@@ -176,14 +227,15 @@ public class GUI {
                 if (buttonid == MouseEvent.BUTTON3)
                 {
                     popupMenu.removeAll();
-                    if (focusedRowIndex != -1) {//是否选中文件或文件夹
+                    if (focusedRowIndex != -1) {//选中文件或文件夹
                         table1.setRowSelectionInterval(focusedRowIndex,focusedRowIndex);
-                        if (MFD.path.size() == 1)//只在根目录显示
-                            popupMenu.add(createDir);
+                        popupMenu.add(openFile);
                         popupMenu.add(rename);
                         popupMenu.add(delete);
+                        popupMenu.add(fileproperty);
 
-                    } else {
+                    } else {//未选中文件或文件夹
+
                         if (MFD.path.size() == 1)//只在根目录显示
                             popupMenu.add(createDir);
                         else//在二级目录显示
@@ -247,7 +299,7 @@ public class GUI {
     private void initJtree()
     {
 
-        DefaultMutableTreeNode root=new DefaultMutableTreeNode("root");
+        root=new DefaultMutableTreeNode("root");
         DefaultTreeModel treemodel=new DefaultTreeModel(root);
         tree1.setModel(treemodel);
     }
@@ -350,7 +402,21 @@ public class GUI {
 
         frame.setVisible(true);
     }
-
+    private void refreshtree(){
+        for(int i=0;i<root.getChildCount();i++)
+            root.remove(i);
+        for(UFD u:MFD.ufdlist)
+        {
+            DefaultMutableTreeNode node=new DefaultMutableTreeNode(u.username);
+            root.add(node);
+            for(FCB f:u.filelist)
+            {
+                DefaultMutableTreeNode node2=new DefaultMutableTreeNode(f.filename);
+                node.add(node2);
+            }
+        }
+        tree1.updateUI();
+    }
     private void refreshpath() {
         pathLabel.setText(MFD.getPath());
     }
@@ -381,14 +447,21 @@ public class GUI {
             }
         }
         table1.updateUI();
+        refreshtree();
         refreshpath();
 
     }
 
     private void createDir() {
-        String name = JOptionPane.showInputDialog(rootpane,"文件夹名称");
-        if (name == null || name.isEmpty())
-            return;
+        String name;
+        for(int i=0;;i++)
+        {
+            name="新建文件夹";
+            if(i!=0)
+                name+="("+i+")";
+            if(MFD.findUFDByname(name)==null)
+                break;
+        }
         MFD.ufdlist.add(new UFD(name));
         refreshList();
     }

@@ -5,6 +5,7 @@ public class UFD {
     public String username;
     public ArrayList<FCB> filelist=new ArrayList<>();
     public String type="文件夹";
+    public String property="a";//文件属性,'r'只读,'a'读写
     public UFD(String name)
     {
         username=name;
@@ -28,10 +29,7 @@ public class UFD {
                 //在文件列表中创建新FCB
                 return file;
             }
-            return null;
         }
-
-
     }
     public void deleteFile(String filename) {//删除文件
 
@@ -78,9 +76,11 @@ public class UFD {
         return "";
     }
     public int  renameFile(String filename,String rename) {//重命名文件
+        if(filename.equals(rename))
+            return 0;
         for(FCB i:filelist) {
-            if(i.filename.equals(rename)) {
-                return 0;//有重名，重命名失败
+            if(i.filename.equals(rename)&&!i.filename.equals(filename)) {
+                return -1;//有重名，重命名失败
             }
         }
         for(FCB i:filelist) {
