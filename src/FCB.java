@@ -17,7 +17,7 @@ public class FCB {
     		  int i=Disk.disk_createfile(1);//申请一个区块
     		  if(i!=-1) {
     			  block=new Block(i,1);
-        		  Disk.disk[i]=content.getBytes();
+        		  Disk.disk[i]=content.getBytes("utf-8");
     		  }		  
     	}else
     	{
@@ -36,6 +36,9 @@ public class FCB {
     }
     String read() throws UnsupportedEncodingException
     {
+    	if(length==0) {
+    		return "";
+    	}
     	byte temp[]=new byte[length];
     	int num=length/512;    	
     	for(int x=0;x<num;x++) {//512一组开始读取		
