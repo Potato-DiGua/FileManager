@@ -24,6 +24,7 @@ public class UFD {
                 file.filename="新建文件("+i+")";
                 file.shuxing="a";
 
+                file.filepath=filepath;
                 //在文件列表中创建新FCB
                 return file;
             }

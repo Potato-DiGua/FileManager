@@ -3,6 +3,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.UnsupportedEncodingException;
 import java.util.Vector;
 
 public class GUI {
@@ -70,14 +71,7 @@ public class GUI {
         //右键菜单重命名
         JMenuItem rename = new JMenuItem("重命名");
         rename.addActionListener(e -> {
-            if(MFD.path.size()==1)
-            {
-                table1.editCellAt(table1.getSelectedRow(),0);
-            }
-            else
-            {
-
-            }
+            table1.editCellAt(table1.getSelectedRow(),0);
         });
         //右键菜单删除
         JMenuItem delete = new JMenuItem("删除");
@@ -116,6 +110,8 @@ public class GUI {
             }
         });
         */
+
+        //将表格的修改内容更新到文件系统
         model.addTableModelListener(e ->  {
                 int type=e.getType();
                 int row=e.getFirstRow();
@@ -125,7 +121,28 @@ public class GUI {
                     //System.out.println("行"+row+"列："+col);
                     //System.out.println(table1.getValueAt(row,col));
                     //System.out.println(table1.getValueAt(row,col));
-                    MFD.rename(MFD.ufdlist.get(row),model.getValueAt(row,col).toString());
+                    if(MFD.path.size()==1)
+                        MFD.rename(MFD.ufdlist.get(row),model.getValueAt(row,col).toString());
+                    else
+                    {
+                        UFD ufd=null;
+                        for (UFD u : MFD.ufdlist) {
+
+                            if (u.username.equals(MFD.path.get(1))) {
+                                //content=u.openFile(name);
+                                ufd=u;
+                                break;
+                            }
+
+                        }
+                        if(ufd!=null)
+                        {
+                            System.out.println(row);
+                            FCB f=ufd.filelist.get(row);
+                            ufd.renameFile(MFD.getPath(),f.filename,model.getValueAt(row,col).toString());
+                        }
+                    }
+
                 }
         });
 
@@ -261,14 +278,20 @@ public class GUI {
         for (UFD u : MFD.ufdlist) {
 
             if (u.username.equals(MFD.path.get(1))) {
-                //content=u.openFile(name);
+                try{
+                    content=u.openFile(MFD.getPath(),name);
+                }catch (UnsupportedEncodingException ue)
+                {
+                    ue.printStackTrace();
+                }
+
                 ufd=u;
                 break;
             }
 
         }
-
-        fileEditWindow(name,content,ufd);
+        if(ufd!=null)
+            fileEditWindow(name,content,ufd);
     }
     private void fileEditWindow(String name,String content,UFD ufd)
     {
@@ -289,7 +312,13 @@ public class GUI {
                 int options=JOptionPane.showConfirmDialog(frame,"是否在关闭之前保存文件","提示",JOptionPane.YES_NO_CANCEL_OPTION);
                 if(options==JOptionPane.YES_OPTION)
                 {
-                    //ufd.xiugaiFilewords(name,text);
+                    try {
+                        ufd.xiugaiFilewords(MFD.getPath(),name,text);
+                    }catch (UnsupportedEncodingException ue)
+                    {
+                        ue.printStackTrace();
+                    }
+
                     frame.dispose();
                 }
                 else if(options==JOptionPane.NO_OPTION)
@@ -328,7 +357,7 @@ public class GUI {
                     for (FCB f : u.filelist) {
                         Vector<String> Row = new Vector<>();
                         Row.add(f.filename);
-                        Row.add(u.type);
+                        Row.add("文件");
                         model.addRow(Row);
                     }
                     break;

@@ -1,17 +1,17 @@
 public class Disk {
 	public static Block firstblock=new Block(0,1024);
 	public static byte[][] disk=new byte[1024][512];
-	public static void disk_deletefile(FCB i) {
-		for(int q=i.block.start;q<i.block.start+i.block.length;q++) {//清空所使用的disk
-			disk[q]=null;
-		}
-		if((i.block.start+i.block.length)==firstblock.start) {//删除的文件正好可以和firstblock合并
-			firstblock.start=i.block.start;
+
+	public static void disk_deletefile(int i) {
+		if(i<firstblock.start-1) {//删除的文件是first的start之前文件
+			Block a=new Block(i,1);
+			Block temp=firstblock;
+			firstblock=a;
+			temp.lastBlock=firstblock;
+			firstblock.nextBlock=temp;//firstblock是第i个空闲块，指向原firstblock
 		}else
-		{
-			Block temp=new Block(i.block.start,i.block.length);
-			firstblock.lastBlock=temp;			
-			temp.nextBlock=firstblock;
+		if(i==firstblock.start-1) {//删除的区块是start之前的一块，则start直接-1
+			firstblock.start--;
 		}
 	}
 	public static int disk_createfile(int len) {
