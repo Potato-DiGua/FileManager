@@ -1,6 +1,11 @@
+import com.sun.xml.internal.ws.api.streaming.XMLStreamWriterFactory;
+
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.UnsupportedEncodingException;
@@ -15,6 +20,9 @@ public class GUI {
     private JButton reButton;
     private JLabel pathLabel;
     private JPanel topPanel;
+    private JPanel listjp;
+    private JTree tree1;
+    private JScrollPane jsp2;
     private Vector<String> columnNname = new Vector<>();
     private Vector<Vector> data = new Vector<>();
     private JPopupMenu popupMenu = new JPopupMenu();
@@ -232,8 +240,16 @@ public class GUI {
             reButton.setEnabled(false);
         });
 
+        initJtree();
         reButton.setEnabled(false);
         refreshpath();
+    }
+    private void initJtree()
+    {
+
+        DefaultMutableTreeNode root=new DefaultMutableTreeNode("root");
+        DefaultTreeModel treemodel=new DefaultTreeModel(root);
+        tree1.setModel(treemodel);
     }
     //设置列表某一行背景色
     public static void setOneRowBackgroundColor(JTable table, int rowIndex,
