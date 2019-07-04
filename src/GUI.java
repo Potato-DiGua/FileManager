@@ -1,12 +1,8 @@
 import javax.swing.*;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.List;
 import java.util.Vector;
 
 public class GUI {
@@ -74,7 +70,14 @@ public class GUI {
         //右键菜单重命名
         JMenuItem rename = new JMenuItem("重命名");
         rename.addActionListener(e -> {
+            if(MFD.path.size()==1)
+            {
+                table1.editCellAt(table1.getSelectedRow(),0);
+            }
+            else
+            {
 
+            }
         });
         //右键菜单删除
         JMenuItem delete = new JMenuItem("删除");
@@ -119,7 +122,10 @@ public class GUI {
                 int col=e.getColumn();
                 if(type==TableModelEvent.UPDATE)
                 {
-                    System.out.println("行"+row+"列："+col);
+                    //System.out.println("行"+row+"列："+col);
+                    //System.out.println(table1.getValueAt(row,col));
+                    //System.out.println(table1.getValueAt(row,col));
+                    MFD.rename(MFD.ufdlist.get(row),model.getValueAt(row,col).toString());
                 }
         });
 
@@ -131,13 +137,22 @@ public class GUI {
 
                 int buttonid=e.getButton();
                 int clickcount=e.getClickCount();
+                Point p=e.getPoint();
+                int focusedRowIndex = table1.rowAtPoint(p);
+                int focusedColumnIndex=table1.columnAtPoint(p);
 
+                if(focusedRowIndex==-1)//鼠标未选中 清空选中项 停止输入
+                {
+                    table1.clearSelection();
+                    if (table1.isEditing())
+                        table1.getCellEditor().stopCellEditing();
+                }
                 //右键菜单显示
                 if (buttonid == MouseEvent.BUTTON3)
                 {
                     popupMenu.removeAll();
-                    int focusedRowIndex = table1.rowAtPoint(e.getPoint());
                     if (focusedRowIndex != -1) {//是否选中文件或文件夹
+                        table1.setRowSelectionInterval(focusedRowIndex,focusedRowIndex);
                         if (MFD.path.size() == 1)//只在根目录显示
                             popupMenu.add(createDir);
                         popupMenu.add(rename);
@@ -151,21 +166,15 @@ public class GUI {
                     }
                     popupMenu.show(table1, e.getX(), e.getY());
                 }
-                else if(buttonid==MouseEvent.BUTTON1 && clickcount == 1){
-
-                    int focusedRowIndex = table1.rowAtPoint(e.getPoint());
-                    int focusedColumnIndex=table1.columnAtPoint(e.getPoint());
+                /*else if(buttonid==MouseEvent.BUTTON1 && clickcount == 1){
                     if(focusedRowIndex==-1)
                     {
-                        table1.clearSelection();
-                        if (table1.isEditing())
-                            table1.getCellEditor().stopCellEditing();
                     }
                     else
                     {
                         System.out.println(table1.getValueAt(table1.getSelectedRow(),0));
                     }
-                    /*鼠标单击实现选中
+                    鼠标单击实现选中
                     else
                     {
                         if(focusedColumnIndex==0)
@@ -177,11 +186,10 @@ public class GUI {
                             j.selectAll();
                         }
 
-                    }*/
-                }
+                    }
+                }*/
                 else if (buttonid == MouseEvent.BUTTON1 && clickcount == 2)
                 {
-                    int focusedRowIndex = table1.rowAtPoint(e.getPoint());
                     if (focusedRowIndex != -1) {
                         String name = table1.getValueAt(focusedRowIndex, 0).toString();
                         if (MFD.path.size() == 1)//双击打开文件夹
@@ -193,8 +201,6 @@ public class GUI {
                         }
 
                     }
-                    else
-                        table1.clearSelection();
                 }
             }
         });
@@ -255,7 +261,7 @@ public class GUI {
         for (UFD u : MFD.ufdlist) {
 
             if (u.username.equals(MFD.path.get(1))) {
-                content=u.openFile(name);
+                //content=u.openFile(name);
                 ufd=u;
                 break;
             }
@@ -283,7 +289,7 @@ public class GUI {
                 int options=JOptionPane.showConfirmDialog(frame,"是否在关闭之前保存文件","提示",JOptionPane.YES_NO_CANCEL_OPTION);
                 if(options==JOptionPane.YES_OPTION)
                 {
-                    ufd.xiugaiFilewords(name,text);
+                    //ufd.xiugaiFilewords(name,text);
                     frame.dispose();
                 }
                 else if(options==JOptionPane.NO_OPTION)
@@ -313,7 +319,7 @@ public class GUI {
             for (UFD u : MFD.ufdlist) {
                 Vector<String> Row = new Vector<>();
                 Row.add(u.username);
-                Row.add("文件夹");
+                Row.add(u.type);
                 model.addRow(Row);
             }
         } else {
@@ -322,7 +328,7 @@ public class GUI {
                     for (FCB f : u.filelist) {
                         Vector<String> Row = new Vector<>();
                         Row.add(f.filename);
-                        Row.add("文件");
+                        Row.add(u.type);
                         model.addRow(Row);
                     }
                     break;
@@ -341,7 +347,6 @@ public class GUI {
         MFD.ufdlist.add(new UFD(name));
         refreshList();
     }
-
     private void create_File() {
         for (UFD u : MFD.ufdlist) {
             if (u.username.equals(MFD.path.get(1))) {
@@ -352,7 +357,10 @@ public class GUI {
         refreshList();
         table1.editCellAt(table1.getRowCount()-1,0);
     }
+    private void rename()
+    {
 
+    }
     public static void main(String[] args) {
         //设置UI风格为当前系统风格
         try {

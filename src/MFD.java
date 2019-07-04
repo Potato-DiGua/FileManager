@@ -20,4 +20,8 @@ public class MFD {
 
         path.remove(path.size() - 1);
     }
+    public static void rename(UFD u,String newname)
+    {
+        u.username=newname;
+    }
 }

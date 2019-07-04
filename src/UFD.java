@@ -4,12 +4,11 @@ import java.util.ArrayList;
 public class UFD {
     public String username;
     public ArrayList<FCB> filelist=new ArrayList<>();
-
+    public String type="文件夹";
     public UFD(String name)
     {
         username=name;
     }
-
     public int existFile(String filepath,String filename) {//文件是否存在
     	for(FCB i:filelist) {
             if(i.filepath.equals(filepath)&&i.filename.equals(filename)) {
