@@ -1,4 +1,8 @@
 import javax.swing.*;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -14,8 +18,8 @@ public class GUI {
     private JButton reButton;
     private JLabel pathLabel;
     private JPanel topPanel;
-    private Vector<String> columnNname = new Vector();
-    private Vector<Vector> data = new Vector();
+    private Vector<String> columnNname = new Vector<>();
+    private Vector<Vector> data = new Vector<>();
     private JPopupMenu popupMenu = new JPopupMenu();
     private DefaultTableModel model;
     private Color focuscolor=new Color(0xC6E2FF);
@@ -30,17 +34,24 @@ public class GUI {
             @Override
             public boolean isCellEditable(int row, int column) {
 
-                if(column==0)
-                    return true;
-                else
-                    return false;
-
+                return column==0;
             }
         };
         table1.setModel(model);
+        //当输入框获取焦点时全选
+        jtf.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                super.focusGained(e);
+                jtf.selectAll();
+            }
+        });
+        //设置table1的编辑器为输入框
         DefaultCellEditor dfc=new DefaultCellEditor(jtf);
+        //设置table1单击开始编辑
         dfc.setClickCountToStart(1);
         table1.setDefaultEditor(table1.getColumnClass(0),dfc);
+
         /*
         table1=new JTable(model);
         table1.setPreferredSize(new Dimension(300,400));
@@ -53,16 +64,12 @@ public class GUI {
 
         table1.getColumn("名称").setCellEditor(dce);
         */
-        //设置排序
-        /*
-        final TableRowSorter sorter = new TableRowSorter(model);
-        table1.setRowSorter(sorter);*/
+
+
         //右键菜单新建文件夹
         JMenuItem createDir = new JMenuItem("新建文件夹");
         popupMenu.add(createDir);
-        createDir.addActionListener(e -> {
-            createDir();
-        });
+        createDir.addActionListener(e -> createDir());
 
         //右键菜单重命名
         JMenuItem rename = new JMenuItem("重命名");
@@ -76,24 +83,18 @@ public class GUI {
         });
         //右键新建文件
         JMenuItem createFile = new JMenuItem("新建文件");
-        createFile.addActionListener(e -> {
-            create_File();
-        });
+        createFile.addActionListener(e ->
+            create_File()
+        );
 
-        //右键菜单显示
-        table1.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                super.focusGained(e);
 
-            }
-        });
+        /*
         table1.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             //修改焦点所在行颜色
             public void mouseMoved(MouseEvent e) {
                 super.mouseMoved(e);
-                System.out.println(e.getPoint());
+                //System.out.println(e.getPoint());
                 int focusedRowIndex = table1.rowAtPoint(e.getPoint());
                 //鼠标是否超出Jtable边界
                 if(!table1.contains(e.getPoint()))
@@ -102,8 +103,6 @@ public class GUI {
                     {
                     if(focusedRowIndex!=-1)
                     {
-                        //System.out.println("获取焦点"+focusedRowIndex);
-
                         setOneRowBackgroundColor(table1,focusedRowIndex,focuscolor);
                     }
                     else{
@@ -113,6 +112,17 @@ public class GUI {
 
             }
         });
+        */
+        model.addTableModelListener(e ->  {
+                int type=e.getType();
+                int row=e.getFirstRow();
+                int col=e.getColumn();
+                if(type==TableModelEvent.UPDATE)
+                {
+                    System.out.println("行"+row+"列："+col);
+                }
+        });
+
         table1.addMouseListener(new MouseAdapter() {
             @Override
 
@@ -122,6 +132,7 @@ public class GUI {
                 int buttonid=e.getButton();
                 int clickcount=e.getClickCount();
 
+                //右键菜单显示
                 if (buttonid == MouseEvent.BUTTON3)
                 {
                     popupMenu.removeAll();
@@ -145,9 +156,15 @@ public class GUI {
                     int focusedRowIndex = table1.rowAtPoint(e.getPoint());
                     int focusedColumnIndex=table1.columnAtPoint(e.getPoint());
                     if(focusedRowIndex==-1)
+                    {
                         table1.clearSelection();
+                        if (table1.isEditing())
+                            table1.getCellEditor().stopCellEditing();
+                    }
                     else
-                        jtf.selectAll();
+                    {
+                        System.out.println(table1.getValueAt(table1.getSelectedRow(),0));
+                    }
                     /*鼠标单击实现选中
                     else
                     {
@@ -181,6 +198,8 @@ public class GUI {
                 }
             }
         });
+
+
 
         table1.setRowSorter(new TableRowSorter<>(model));
         //返回按钮
@@ -234,11 +253,13 @@ public class GUI {
         String content="";
         UFD ufd=null;
         for (UFD u : MFD.ufdlist) {
+
             if (u.username.equals(MFD.path.get(1))) {
                 content=u.openFile(name);
                 ufd=u;
+                break;
             }
-            break;
+
         }
 
         fileEditWindow(name,content,ufd);
@@ -290,7 +311,7 @@ public class GUI {
 
         if (MFD.path.size() == 1) {
             for (UFD u : MFD.ufdlist) {
-                Vector Row = new Vector();
+                Vector<String> Row = new Vector<>();
                 Row.add(u.username);
                 Row.add("文件夹");
                 model.addRow(Row);
@@ -299,7 +320,7 @@ public class GUI {
             for (UFD u : MFD.ufdlist) {
                 if (u.username.equals(MFD.path.get(1))) {
                     for (FCB f : u.filelist) {
-                        Vector Row = new Vector();
+                        Vector<String> Row = new Vector<>();
                         Row.add(f.filename);
                         Row.add("文件");
                         model.addRow(Row);
@@ -350,5 +371,4 @@ public class GUI {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-
 }

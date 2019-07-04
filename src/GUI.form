@@ -33,7 +33,7 @@
             <clientProperties>
               <JTable.autoStartsEdit class="java.lang.Boolean" value="false"/>
               <Table.isFileList class="java.lang.Boolean" value="false"/>
-              <terminateEditOnFocusLost class="java.lang.Boolean" value="false"/>
+              <terminateEditOnFocusLost class="java.lang.Boolean" value="true"/>
             </clientProperties>
           </component>
         </children>
@@ -50,12 +50,14 @@
             <properties>
               <horizontalAlignment value="0"/>
               <text value="返回"/>
+              <toolTipText value="返回"/>
             </properties>
           </component>
           <component id="4c081" class="javax.swing.JLabel" binding="pathLabel">
             <constraints/>
             <properties>
-              <text value="Label"/>
+              <text value="/root"/>
+              <toolTipText value="路径"/>
             </properties>
           </component>
         </children>
