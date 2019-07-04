@@ -1,5 +1,4 @@
 public class Disk {
-	\\磁盘
 	public static Block firstblock=new Block(0,1024);
 	public static byte[][] disk=new byte[1024][512];
 
