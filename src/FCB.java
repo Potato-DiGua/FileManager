@@ -27,7 +27,7 @@ public class FCB {
         		block=new Block(t,num+1);
     		}else
     			return;
-    		byte temp[]=content.getBytes();//将字符串转换成byte数组
+    		byte temp[]=content.getBytes("utf-8");//将字符串转换成byte数组
     		for(int x=0;x<num;x++) {//512一组开始存储		
     			System.arraycopy(temp,x*512,Disk.disk[t+x],0,512);
     		}
@@ -36,12 +36,14 @@ public class FCB {
     }
     String read() throws UnsupportedEncodingException
     {
-    	String readstr="";
-    	for(int i=block.start;i<block.start+block.length;i++) {//一次读
-    		String temp=new String(Disk.disk[i],"utf-8");
-    		readstr=readstr+temp;
-    	}
-    	return readstr;
+    	byte temp[]=new byte[length];
+    	int num=length/512;    	
+    	for(int x=0;x<num;x++) {//512一组开始读取		
+			System.arraycopy(Disk.disk[block.start+x],0,temp,x*512,512);
+		}
+    	System.arraycopy(Disk.disk[block.start+num], 0,temp , num*512, length-512*num);//最后多出来的进行读取
+    	String temp2=new String(temp,"utf-8");
+    	return temp2;
     }
     
 }
