@@ -139,7 +139,7 @@ public class GUI {
                         {
                             System.out.println(row);
                             FCB f=ufd.filelist.get(row);
-                            ufd.renameFile(MFD.getPath(),f.filename,model.getValueAt(row,col).toString());
+                            ufd.renameFile(f.filename,model.getValueAt(row,col).toString());
                         }
                     }
 
@@ -279,7 +279,7 @@ public class GUI {
 
             if (u.username.equals(MFD.path.get(1))) {
                 try{
-                    content=u.openFile(MFD.getPath(),name);
+                    content=u.openFile(name);
                 }catch (UnsupportedEncodingException ue)
                 {
                     ue.printStackTrace();
@@ -313,7 +313,7 @@ public class GUI {
                 if(options==JOptionPane.YES_OPTION)
                 {
                     try {
-                        ufd.xiugaiFilewords(MFD.getPath(),name,text);
+                        ufd.xiugaiFilewords(name,text);
                     }catch (UnsupportedEncodingException ue)
                     {
                         ue.printStackTrace();
