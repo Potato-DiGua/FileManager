@@ -3,10 +3,8 @@ import java.io.UnsupportedEncodingException;
 public class FCB {
     String filepath;  //文件路径
     String filename;  //文件名
-    //String neirong;	  //文件内容
-    String shuxing;      //文件属性'w'只写,'r'只读
+    String shuxing="a";      //文件属性'w'只写,'r'只读,'a'读写
     int length=0;       //文件长度
-    //int address;   //文件首地址
     Block block;
     void write(String content) throws UnsupportedEncodingException
     {
