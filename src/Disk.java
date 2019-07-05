@@ -1,7 +1,7 @@
 public class Disk {
 	public static Block firstblock=new Block(0,1024);
 	public static byte[][] disk=new byte[1024][512];
-	public static void disk_deletefile(FCB i) {
+	/*public static void disk_deletefile(FCB i) {
 		if(i.length==0)
 			return;
 		for(int q=i.block.start;q<i.block.start+i.block.length;q++) {//清空所使用的disk
@@ -15,7 +15,7 @@ public class Disk {
 			firstblock.lastBlock=temp;			
 			temp.nextBlock=firstblock;
 		}
-	}
+	}*/
     public static int disk_createfile(int len) {
         Block useblock=firstblock;
         while(useblock!=null&&useblock.length<len) {//找到第一个能放下len长度大小的块

@@ -44,7 +44,7 @@ public class Dir {
 
         for(int i=0;i<filelist.size();i++) {
             if(filelist.get(i).filename.equals(filename)) {
-            	Disk.disk_deletefile(filelist.get(i));
+            	//Disk.disk_deletefile(filelist.get(i));
             	filelist.remove(i);
             	i--;           	
             	break;
@@ -59,7 +59,7 @@ public class Dir {
                 if(i.shuxing.equals("r")) {//只读状况下不允许写入
                     return -1;
                 }else
-                	Disk.disk_deletefile(i);
+                	//Disk.disk_deletefile(i);
                     i.write(words);
                     return 1;
             }

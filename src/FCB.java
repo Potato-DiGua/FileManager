@@ -16,10 +16,11 @@ public class FCB {
     {
     	int len=content.getBytes("utf-8").length;  
     	System.out.println(len);
-    	length=len;
+
     	if(len<=512) {//占用一个区块
     		  int i=Disk.disk_createfile(1);//申请一个区块
     		  if(i!=-1) {
+				  length=len;
     			  block=new Block(i,1);
         		  Disk.disk[i]=content.getBytes("utf-8");
     		  }		  
@@ -28,6 +29,7 @@ public class FCB {
     		int num=len/512;//占用多个区块，向下取整
     		int t=Disk.disk_createfile(num+1);//需要num+1个区块存储，如果t=-1，没有空间，否则在第t个区块开始存储
     		if(t!=-1) {
+				length=len;
         		block=new Block(t,num+1);
     		}else
 			{
