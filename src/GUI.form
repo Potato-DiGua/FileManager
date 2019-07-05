@@ -81,7 +81,10 @@
             <children>
               <component id="d380d" class="javax.swing.JTree" binding="tree1" default-binding="true">
                 <constraints/>
-                <properties/>
+                <properties>
+                  <font name="Droid Sans Mono Slashed" size="14" style="0"/>
+                  <rowHeight value="25"/>
+                </properties>
               </component>
             </children>
           </scrollpane>

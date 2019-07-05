@@ -15,11 +15,17 @@ public class MFD {
     {
         return nowPath.get(nowPath.size()-1);
     }
+
     public static Dir findDirByPath(String path)
     {
+        nowPath.clear();
         ArrayList<String> names= new ArrayList<>(Arrays.asList(path.split("/")));
-        return find(root,names);
 
+        names.remove(0);//分割路径后第一个对象为空所以删除
+        names.remove(0);//去除根目录
+        nowPath.add(root);
+
+        return find(root,names,0);
     }
     public static Dir findDirByName(Dir parent,String name)
     {
@@ -31,17 +37,23 @@ public class MFD {
         return null;
     }
 
-    private static Dir find(Dir Root,ArrayList<String> names)
+    private static Dir find(Dir Root,ArrayList<String> names,int i)
     {
         for(Dir d:Root.childDirlist)
         {
-            if(d.Dirname.equals(names.get(0)))
+
+            /*System.out.println("正在查找");
+            System.out.println(d.Dirname);
+            System.out.println(names.get(i));*/
+
+            if(d.Dirname.equals(names.get(i)))
             {
-                names.remove(0);
-                if(names.size()==1)
+                System.out.println(d.Dirname);
+                nowPath.add(d);
+                if(names.size()-1==i)
                     return d;
                 else
-                    return find(d,names);
+                    return find(d,names,i+1);
             }
 
         }

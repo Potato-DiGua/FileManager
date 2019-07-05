@@ -1,8 +1,7 @@
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.UnsupportedEncodingException;
@@ -82,7 +81,7 @@ public class GUI {
                 String name = table1.getValueAt(row, 0).toString();
                 String type=table1.getValueAt(row, 1).toString();
                 MFD.deletefile(name,type);
-                refreshList();
+                refresh();
             }
         });
         //右键新建文件
@@ -187,7 +186,7 @@ public class GUI {
 
                 }
 
-                refreshList();
+                refresh();
             }
         });
         table1.addMouseListener(new MouseAdapter() {
@@ -231,28 +230,6 @@ public class GUI {
                     }
                     popupMenu.show(table1, e.getX(), e.getY());
                 }
-                /*else if(buttonid==MouseEvent.BUTTON1 && clickcount == 1){
-                    if(focusedRowIndex==-1)
-                    {
-                    }
-                    else
-                    {
-                        System.out.println(table1.getValueAt(table1.getSelectedRow(),0));
-                    }
-                    鼠标单击实现选中
-                    else
-                    {
-                        if(focusedColumnIndex==0)
-                        {
-                            table1.editCellAt(focusedRowIndex,focusedColumnIndex);
-                            JTextField j=(JTextField) table1.getCellEditor().getTableCellEditorComponent(table1,
-                                    table1.getValueAt(focusedRowIndex,0),true,
-                                    focusedRowIndex,0);
-                            j.selectAll();
-                        }
-
-                    }
-                }*/
                 else if (buttonid == MouseEvent.BUTTON1 && clickcount == 2) {
                     if (focusedRowIndex != -1) {
                         String name = table1.getValueAt(focusedRowIndex, 0).toString();
@@ -269,13 +246,34 @@ public class GUI {
                 }
             }
         });
+        tree1.addTreeSelectionListener(e -> {
+            DefaultMutableTreeNode node=(DefaultMutableTreeNode)tree1.getLastSelectedPathComponent();
+            if(node!=null)
+            {
+                if(node.getUserObject().getClass().getName().equals(Dir.class.getName()))
+                {
+                    TreeNode[] path=node.getPath();
+                    String pathstr="";
+                    for(TreeNode treeNode:path)
+                    {
+                        pathstr+="/"+treeNode.toString();
+                    }
+                    //System.out.println(pathstr);
 
+                    MFD.findDirByPath(pathstr);
+
+                    refreshList();
+                    refreshpath();
+                }
+            }
+        });
 
         table1.setRowSorter(new TableRowSorter<>(model));
         //返回按钮
         reButton.addActionListener(e -> {
             MFD.rePath();
             refreshList();
+            refreshpath();
             if(MFD.nowPath.size()==1)
                 reButton.setEnabled(false);
         });
@@ -287,8 +285,11 @@ public class GUI {
     private void initJTree()
     {
         root=new DefaultMutableTreeNode(MFD.root);
+
         treemodel=new DefaultTreeModel(root);
+
         tree1.setModel(treemodel);
+        tree1.setCellRenderer(new FileJTreeRenderer());
     }
     private void reBuildJtree(DefaultMutableTreeNode root,Dir droot) {
 
@@ -342,6 +343,7 @@ public class GUI {
 
 
         refreshList();
+        refreshpath();
         reButton.setEnabled(true);
     }
 
@@ -397,13 +399,19 @@ public class GUI {
     }
 
     private void refreshtree() {
+
         root.removeAllChildren();
 
         reBuildJtree(root,MFD.root);
 
         tree1.updateUI();
     }
-
+    private void refresh()
+    {
+        refreshList();
+        refreshpath();
+        refreshtree();
+    }
     private void refreshpath() {
         pathLabel.setText(MFD.getPath());
     }
@@ -423,8 +431,6 @@ public class GUI {
         }
 
         table1.updateUI();
-        refreshtree();
-        refreshpath();
 
     }
 
@@ -439,18 +445,14 @@ public class GUI {
                 break;
         }
         nowDir.childDirlist.add(new Dir(name));
-        refreshList();
+        refresh();
     }
 
     private void create_File() {
         Dir nowDir=MFD.getNowDir();
         nowDir.createFile(MFD.getPath());
-        refreshList();
+        refresh();
         table1.editCellAt(table1.getRowCount() - 1, 0);
-    }
-
-    private void rename() {
-
     }
 
     public static void main(String[] args) {
