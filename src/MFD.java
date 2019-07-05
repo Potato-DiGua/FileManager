@@ -4,7 +4,7 @@ import java.util.Arrays;
 public class MFD {
     public static Dir root=new Dir("root");
     public static ArrayList<Dir> nowPath=new ArrayList<>();
-
+    private static ArrayList<Dir> tmppath=new ArrayList<>();
     public static String getPath() {
         String pathstr = "";
         for (Dir d : nowPath)
@@ -18,14 +18,36 @@ public class MFD {
 
     public static Dir findDirByPath(String path)
     {
-        nowPath.clear();
+
+
+
         ArrayList<String> names= new ArrayList<>(Arrays.asList(path.split("/")));
 
-        names.remove(0);//分割路径后第一个对象为空所以删除
-        names.remove(0);//去除根目录
-        nowPath.add(root);
+        if(names.get(0).isEmpty())
+            names.remove(0);//分割路径后第一个对象为空所以删除
 
-        return find(root,names,0);
+        if(names.get(0).equals(root.Dirname))
+        {
+            names.remove(0);//去除根目录
+        }
+        else
+        {
+            return null;
+        }
+
+        tmppath.clear();
+        tmppath.add(root);
+
+        if(names.size()!=0)
+        {
+            if(find(root,names,0)==null)
+                return null;
+        }
+
+        nowPath.clear();
+        nowPath.addAll(tmppath);
+        return nowPath.get(nowPath.size()-1);//返回当前目录最后的文件夹
+
     }
     public static Dir findDirByName(Dir parent,String name)
     {
@@ -39,6 +61,7 @@ public class MFD {
 
     private static Dir find(Dir Root,ArrayList<String> names,int i)
     {
+
         for(Dir d:Root.childDirlist)
         {
 
@@ -48,8 +71,8 @@ public class MFD {
 
             if(d.Dirname.equals(names.get(i)))
             {
-                System.out.println(d.Dirname);
-                nowPath.add(d);
+                //System.out.println(d.Dirname);
+                tmppath.add(d);
                 if(names.size()-1==i)
                     return d;
                 else

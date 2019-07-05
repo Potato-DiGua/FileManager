@@ -14,11 +14,11 @@ public class GUI {
     private JTable table1;
     private JScrollPane jsp;
     private JButton reButton;
-    private JLabel pathLabel;
     private JPanel topPanel;
     private JPanel listjp;
     private JTree tree1;
     private JScrollPane jsp2;
+    private JTextField pathinput;
     private Vector<String> columnNname = new Vector<>();
     private Vector<Vector> data = new Vector<>();
     private JPopupMenu popupMenu = new JPopupMenu();
@@ -260,12 +260,17 @@ public class GUI {
                     }
                     //System.out.println(pathstr);
 
-                    MFD.findDirByPath(pathstr);
+                    if(MFD.findDirByPath(pathstr)!=null)
+                    {
+                        refreshList();
+                        refreshpath();
+                    }
 
-                    refreshList();
-                    refreshpath();
+
                 }
             }
+            else
+                tree1.clearSelection();
         });
 
         table1.setRowSorter(new TableRowSorter<>(model));
@@ -277,7 +282,20 @@ public class GUI {
             if(MFD.nowPath.size()==1)
                 reButton.setEnabled(false);
         });
+        pathinput.addActionListener(e -> {
+            String path=pathinput.getText();
+            if(MFD.findDirByPath(path)!=null)
+            {
+                refreshList();
 
+            }
+            else
+            {
+                refreshpath();
+                JOptionPane.showMessageDialog(rootpane,"该路径不存在","提示",JOptionPane.ERROR_MESSAGE);
+            }
+
+        });
         initJTree();
         reButton.setEnabled(false);
         refreshpath();
@@ -413,7 +431,7 @@ public class GUI {
         refreshtree();
     }
     private void refreshpath() {
-        pathLabel.setText(MFD.getPath());
+        pathinput.setText(MFD.getPath());
     }
 
     private void refreshList() {
@@ -475,4 +493,5 @@ public class GUI {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+
 }

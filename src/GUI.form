@@ -23,11 +23,13 @@
               <toolTipText value="返回"/>
             </properties>
           </component>
-          <component id="4c081" class="javax.swing.JLabel" binding="pathLabel">
+          <component id="9ee01" class="javax.swing.JTextField" binding="pathinput">
             <constraints/>
             <properties>
-              <text value="/root"/>
-              <toolTipText value="路径"/>
+              <alignmentY value="1.0"/>
+              <font name="Droid Sans Mono Slashed" size="18" style="0"/>
+              <preferredSize width="600" height="33"/>
+              <requestFocusEnabled value="true"/>
             </properties>
           </component>
         </children>
