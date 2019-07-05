@@ -44,7 +44,7 @@ public class Dir {
 
         for(int i=0;i<filelist.size();i++) {
             if(filelist.get(i).filename.equals(filename)) {
-            	//Disk.disk_deletefile(filelist.get(i));
+            	Disk.disk_deletefile(filelist.get(i).block);
             	filelist.remove(i);
             	i--;           	
             	break;
@@ -58,10 +58,15 @@ public class Dir {
             if(i.filename.equals(filename)) {
                 if(i.shuxing.equals("r")) {//只读状况下不允许写入
                     return -1;
-                }else
-                	//Disk.disk_deletefile(i);
-                    i.write(words);
+                }else {
+                    Block tempblock=new Block(i.block.start,i.block.length);
+                    if(i.write(words)){
+                        Disk.disk_deletefile(tempblock);
+                    }
+
                     return 1;
+                }
+
             }
         }
         return -1;

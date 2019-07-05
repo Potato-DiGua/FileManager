@@ -12,7 +12,7 @@ public class FCB {
 		return filename;
 	}
 
-    public void write(String content) throws UnsupportedEncodingException
+    public boolean write(String content) throws UnsupportedEncodingException
     {
     	int len=content.getBytes("utf-8").length;  
     	System.out.println(len);
@@ -23,7 +23,10 @@ public class FCB {
 				  length=len;
     			  block=new Block(i,1);
         		  Disk.disk[i]=content.getBytes("utf-8");
-    		  }		  
+        		  return true;
+    		  }else
+    		  	return false;
+
     	}else
     	{
     		int num=len/512;//占用多个区块，向下取整
@@ -35,7 +38,7 @@ public class FCB {
 			{
 				JOptionPane.showMessageDialog(
 						new Frame(), "空间不足，保存失败 ");
-				return;
+				return false;
 			}
 
     		byte temp[]=content.getBytes("utf-8");//将字符串转换成byte数组
@@ -43,7 +46,9 @@ public class FCB {
     			System.arraycopy(temp,x*512,Disk.disk[t+x],0,512);
     		}
     		System.arraycopy(temp, num*512, Disk.disk[t+num], 0, len-512*num);//最后多出来的进行存储
-    	}    	
+    		return true;
+    	}
+
     }
     String read() throws UnsupportedEncodingException
     {
