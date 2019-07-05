@@ -16,37 +16,36 @@ public class Disk {
 			temp.nextBlock=firstblock;
 		}
 	}
-public static int disk_createfile(int len) {
-		Block useblock=firstblock;
-		while(!useblock.equals(null)&&useblock.length<len) {//找到第一个能放下len长度大小的块
-			useblock=useblock.nextBlock;
-		}
-		
-		if(useblock.equals(null)){
-			return -1;
-		}
-		
-		if(useblock.length==0) {//没有空闲区块
-			return -1;
-		}
-		useblock.length-=len;
-		int i=useblock.start;//i是可以分配的空闲区块
-		useblock.start+=len;
-		if(useblock.length==0) {//使用的节点变成空的
-			if(!useblock.nextBlock.equals(null)) {//下一节点有节点
-				if(!useblock.lastBlock.equals(null)) {//上一节点有节点
-					useblock.lastBlock.nextBlock=useblock.nextBlock;//上节点的下一个节点等于使用节点的下一个节点
-					useblock.nextBlock.lastBlock=useblock.lastBlock;//下一节点的上一个节点是使用节点的上一个节点
-				}
-				else
-					if(useblock.equals(firstblock)) {//使用的节点是firstblock
-						firstblock=firstblock.nextBlock;//firstblock往后移
-					}
-			}else
-				if(useblock.nextBlock.equals(null)) {//下一节点是空的
-					useblock.lastBlock.nextBlock=null;//上一节点的下一节点是空节点
-				}
-		}
-		return i;//返回开始位置
-	}
+    public static int disk_createfile(int len) {
+        Block useblock=firstblock;
+        while(useblock!=null&&useblock.length<len) {//找到第一个能放下len长度大小的块
+            useblock=useblock.nextBlock;
+        }
+        if(useblock==null){
+            return -1;
+        }
+
+        if(useblock.length==0) {//没有空闲区块
+            return -1;
+        }
+        useblock.length-=len;
+        int i=useblock.start;//i是可以分配的空闲区块
+        useblock.start+=len;
+        if(useblock.length==0) {//使用的节点变成空的
+            if(useblock.nextBlock!=null) {//下一节点有节点
+                if(useblock.lastBlock!=null) {//上一节点有节点
+                    useblock.lastBlock.nextBlock=useblock.nextBlock;//上节点的下一个节点等于使用节点的下一个节点
+                    useblock.nextBlock.lastBlock=useblock.lastBlock;//下一节点的上一个节点是使用节点的上一个节点
+                }
+                else
+                if(useblock.equals(firstblock)) {//使用的节点是firstblock
+                    firstblock=firstblock.nextBlock;//firstblock往后移
+                }
+            }else
+            if(useblock.nextBlock==null) {//下一节点是空的
+                useblock.lastBlock.nextBlock=null;//上一节点的下一节点是空节点
+            }
+        }
+        return i;//返回开始位置
+    }
 }
