@@ -3,15 +3,12 @@ import java.io.UnsupportedEncodingException;
 public class FCB {
     String filepath;  //文件路径
     String filename;  //文件名
-    String shuxing="a";      //文件属性'w'只写,'r'只读,'a'读写
+    //String neirong;	  //文件内容
+    String shuxing;      //文件属性'w'只写,'r'只读
     int length=0;       //文件长度
-    Block block;
-    public String toString()
-	{
-		return filename;
-	}
-
-    public void write(String content) throws UnsupportedEncodingException
+    //int address;   //文件首地址
+    Block block=new Block();
+    void write(String content) throws UnsupportedEncodingException
     {
     	int len=content.getBytes("utf-8").length;  
     	System.out.println(len);
@@ -39,7 +36,7 @@ public class FCB {
     }
     String read() throws UnsupportedEncodingException
     {
-    	if(length==0) {
+    	if(length==0||block.start==-1) {
     		return "";
     	}
     	byte temp[]=new byte[length];
