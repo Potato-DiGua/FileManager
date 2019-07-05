@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
@@ -57,6 +58,7 @@ public class Dir {
         for(FCB i:filelist) {
             if(i.filename.equals(filename)) {
                 if(i.shuxing.equals("r")) {//只读状况下不允许写入
+                    JOptionPane.showMessageDialog(null,"文件为只读模式，不能修改","提示",JOptionPane.WARNING_MESSAGE);
                     return -1;
                 }else {
                     Block tempblock=new Block(i.block.start,i.block.length);

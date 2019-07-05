@@ -10,7 +10,7 @@ public class FileProperty {
     private JLabel locationlabel;
     private JComboBox comboBox1;
     private String filename;
-    public FileProperty(Component parent, String name, Dir u, FCB f, String path, String property)
+    public FileProperty(GUI mainWindow,Component parent, String name, Dir u, FCB f, String path, String property)
     {
         if(u==null)
             return;
@@ -59,19 +59,20 @@ public class FileProperty {
                 {
                     if(f==null)//文件夹
                     {
-                        if(!MFD.rename("文件夹",filename,newname));
-                            JOptionPane.showMessageDialog(null, "存在相同名字的文件,重命名失败", "提示", JOptionPane.ERROR_MESSAGE);
+                        if(!MFD.rename("文件夹",filename,newname))
+                            JOptionPane.showMessageDialog(parent, "存在相同名字的文件夹,重命名失败", "提示", JOptionPane.ERROR_MESSAGE);
 
                     }
                     else//文件
                     {
                         if (!MFD.rename("文件",filename,newname)) {
-                            JOptionPane.showMessageDialog(null, "存在相同名字的文件,重命名失败", "提示", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(parent, "存在相同名字的文件,重命名失败", "提示", JOptionPane.ERROR_MESSAGE);
 
                         }
                     }
                 }
                 frame.dispose();
+                mainWindow.refresh();
             }
         });
         frame.pack();

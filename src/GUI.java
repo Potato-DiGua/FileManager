@@ -55,6 +55,7 @@ public class GUI {
         //table1.getColumn("")
         //设置table1的编辑器为输入框
         DefaultCellEditor dfc = new DefaultCellEditor(jtf);
+
         //设置table1单击开始编辑
         dfc.setClickCountToStart(1);
         table1.setDefaultEditor(table1.getColumnClass(0), dfc);
@@ -112,7 +113,7 @@ public class GUI {
             }
 
         });
-
+        //右键打开文件属性
         JMenuItem fileproperty = new JMenuItem("属性");
         fileproperty.addActionListener(e -> {
             int row = table1.getSelectedRow();
@@ -121,7 +122,7 @@ public class GUI {
                 String type=table1.getValueAt(row, 1).toString();
                 if (type.equals("文件夹")) {
                     Dir u = MFD.findDirByName(MFD.getNowDir(),name);
-                    new FileProperty(rootpane, name, u, null, MFD.getPath() + "/" + name, u.property);
+                    new FileProperty(this,rootpane, name, u, null, MFD.getPath() + "/" + name, u.property);
                 } else {
                     Dir u = MFD.getNowDir();
                     FCB fcb = null;
@@ -130,7 +131,7 @@ public class GUI {
                             fcb = f;
                             break;
                         }
-                    new FileProperty(rootpane, name, u, fcb, MFD.getPath() + "/" + name, fcb.shuxing);
+                    new FileProperty(this,rootpane, name, u, fcb, MFD.getPath() + "/" + name, fcb.shuxing);
                 }
 
 
@@ -430,7 +431,7 @@ public class GUI {
 
         tree1.updateUI();
     }
-    private void refresh()
+    public void refresh()
     {
         refreshList();
         refreshpath();
