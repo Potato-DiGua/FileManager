@@ -68,6 +68,11 @@ public class GUI {
         popupMenu.add(createDir);
         createDir.addActionListener(e -> createDir());
 
+        //右键菜单刷新
+        JMenuItem refreshmenu = new JMenuItem("刷新");
+        refreshmenu.addActionListener(e ->
+                refresh()
+        );
         //右键菜单重命名
         JMenuItem rename = new JMenuItem("重命名");
         rename.addActionListener(e ->
@@ -227,6 +232,7 @@ public class GUI {
                     } else {//未选中文件或文件夹
                         popupMenu.add(createDir);
                         popupMenu.add(createFile);
+                        popupMenu.add(refreshmenu);
                     }
                     popupMenu.show(table1, e.getX(), e.getY());
                 }
@@ -436,8 +442,11 @@ public class GUI {
 
     private void refreshList() {
         int rowcount = model.getRowCount();
+
         for (int i = rowcount - 1; i >= 0; i--)
             model.removeRow(i);
+        table1.updateUI();
+
         String[][] filelist=MFD.getFilelist(MFD.getNowDir());
 
         for(String[] row:filelist)
