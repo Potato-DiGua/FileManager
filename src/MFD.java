@@ -23,7 +23,7 @@ public class MFD {
     {
         for(UFD ufd:ufdlist)
         {
-            if(ufd.username==newname&&ufd!=u)
+            if(ufd.username.equals(newname)&&ufd!=u)
                 return false;
         }
         u.username=newname;

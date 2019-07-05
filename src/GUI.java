@@ -1,15 +1,11 @@
-import com.sun.xml.internal.ws.api.streaming.XMLStreamWriterFactory;
-
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Path;
 import java.util.Vector;
 
 public class GUI {
@@ -184,8 +180,8 @@ public class GUI {
                     //System.out.println(table1.getValueAt(row,col));
                     if(MFD.path.size()==1)
                     {
-                        MFD.rename(MFD.ufdlist.get(row),model.getValueAt(row,col).toString());
-                        JOptionPane.showMessageDialog(null, "存在相同名字的文件,重命名失败", "提示", JOptionPane.ERROR_MESSAGE);
+                        if(!MFD.rename(MFD.ufdlist.get(row),model.getValueAt(row,col).toString()))
+                            JOptionPane.showMessageDialog(null, "存在相同名字的文件,重命名失败", "提示", JOptionPane.ERROR_MESSAGE);
 
                     }
                     else {
