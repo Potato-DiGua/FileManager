@@ -7,4 +7,8 @@ public class Block {
     	start=a;
     	length=b;
     }
+    public Block() {
+        start=-1;
+        length=0;
+    }
 }
