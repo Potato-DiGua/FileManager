@@ -336,7 +336,8 @@ public class GUI {
     }
 
     //设置列表某一行背景色
-    public static void setOneRowBackgroundColor(JTable table, int rowIndex,
+
+    /*public static void setOneRowBackgroundColor(JTable table, int rowIndex,
                                                 Color color) {
         try {
             DefaultTableCellRenderer tcr = new DefaultTableCellRenderer() {
@@ -361,7 +362,7 @@ public class GUI {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
+    }*/
 
     private void open(String name) {
         MFD.openPath(name);
