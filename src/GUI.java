@@ -9,6 +9,7 @@ import java.util.Vector;
 
 /**
  * UI
+ * encoding:UTF-8
  */
 
 
