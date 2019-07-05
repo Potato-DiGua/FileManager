@@ -59,6 +59,9 @@ public class GUI {
         //设置table1单击开始编辑
         dfc.setClickCountToStart(1);
         table1.setDefaultEditor(table1.getColumnClass(0), dfc);
+        FileJTableRenderer ftr=new FileJTableRenderer();
+        table1.setDefaultRenderer(table1.getColumnClass(0),new FileJTableRenderer());
+
         //失去焦点时保存正在编辑的内容
         table1.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         //右键菜单新建文件夹
@@ -131,7 +134,7 @@ public class GUI {
 
         });
 
-
+        /*
         table1.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             //修改焦点所在行颜色
@@ -153,7 +156,7 @@ public class GUI {
                 }
 
             }
-        });
+        });*/
 
 
         //重命名
@@ -464,6 +467,8 @@ public class GUI {
         JFrame frame = new JFrame("文件管理");
         frame.setContentPane(new GUI().rootpane);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        new FileJTableRenderer();
+        //frame.add(new JLabel(new FileJTableRenderer()));
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
