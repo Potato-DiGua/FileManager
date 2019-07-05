@@ -1,14 +1,18 @@
+import java.awt.*;
 import java.io.UnsupportedEncodingException;
-
+import javax.swing.*;
 public class FCB {
     String filepath;  //文件路径
     String filename;  //文件名
-    //String neirong;	  //文件内容
-    String shuxing;      //文件属性'w'只写,'r'只读
+    String shuxing="a";      //文件属性'w'只写,'r'只读,'a'读写
     int length=0;       //文件长度
-    //int address;   //文件首地址
     Block block=new Block();
-    void write(String content) throws UnsupportedEncodingException
+    public String toString()
+	{
+		return filename;
+	}
+
+    public void write(String content) throws UnsupportedEncodingException
     {
     	int len=content.getBytes("utf-8").length;  
     	System.out.println(len);
@@ -26,7 +30,12 @@ public class FCB {
     		if(t!=-1) {
         		block=new Block(t,num+1);
     		}else
-    			return;
+			{
+				JOptionPane.showMessageDialog(
+						new Frame(), "空间不足，保存失败 ");
+				return;
+			}
+
     		byte temp[]=content.getBytes("utf-8");//将字符串转换成byte数组
     		for(int x=0;x<num;x++) {//512一组开始存储		
     			System.arraycopy(temp,x*512,Disk.disk[t+x],0,512);
