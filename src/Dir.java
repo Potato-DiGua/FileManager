@@ -1,14 +1,21 @@
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
-public class UFD {
-    public String username;
+public class Dir {
+
+    public String Dirname;
+
     public ArrayList<FCB> filelist=new ArrayList<>();
+    public ArrayList<Dir> childDirlist=new ArrayList<>();
     public String type="文件夹";
     public String property="a";//文件属性,'r'只读,'a'读写
-    public UFD(String name)
+    public Dir(String name)
     {
-        username=name;
+        Dirname =name;
+    }
+    public String toString()
+    {
+        return Dirname;
     }
     public int existFile(String filename) {//文件是否存在
     	for(FCB i:filelist) {
@@ -26,7 +33,9 @@ public class UFD {
                 file.shuxing="a";
 
                 file.filepath=filepath;
-                //在文件列表中创建新FCB
+                //在文件列表中添加新FCB
+                filelist.add(file);
+
                 return file;
             }
         }
@@ -75,21 +84,22 @@ public class UFD {
         }
         return "";
     }
-    public int  renameFile(String filename,String rename) {//重命名文件
+    public boolean  renameFile(String filename,String rename) {//重命名文件
         if(filename.equals(rename))
-            return 0;
+            return true;
         for(FCB i:filelist) {
             if(i.filename.equals(rename)&&!i.filename.equals(filename)) {
-                return -1;//有重名，重命名失败
+                return false;//有重名，重命名失败
             }
         }
+
         for(FCB i:filelist) {
             if(i.filename.equals(filename)) {
                 i.filename=rename;//可以重命名，执行操作
-                return 1;//成功返回1
+                return true;//成功
             }
         }
-        return -1;
+        return false;
     }
 
 }

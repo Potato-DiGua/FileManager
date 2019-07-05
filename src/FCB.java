@@ -6,7 +6,12 @@ public class FCB {
     String shuxing="a";      //文件属性'w'只写,'r'只读,'a'读写
     int length=0;       //文件长度
     Block block;
-    void write(String content) throws UnsupportedEncodingException
+    public String toString()
+	{
+		return filename;
+	}
+
+    public void write(String content) throws UnsupportedEncodingException
     {
     	int len=content.getBytes("utf-8").length;  
     	System.out.println(len);

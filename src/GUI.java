@@ -1,6 +1,4 @@
 import javax.swing.*;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -33,7 +31,7 @@ public class GUI {
 
     public GUI() {
         //设置当前路径为根目录
-        MFD.openPath("root");
+        MFD.nowPath.add(MFD.root);
 
         columnNname.add("名称");
         columnNname.add("类型");
@@ -79,15 +77,8 @@ public class GUI {
             int row = table1.getSelectedRow();
             if (row != -1) {
                 String name = table1.getValueAt(row, 0).toString();
-                if (table1.getValueAt(row, 1).toString().equals("文件夹")) {
-                    UFD u = MFD.findUFDByname(name);
-                    if (u != null)
-                        MFD.ufdlist.remove(u);
-                } else {
-                    UFD u = MFD.findUFDByname(MFD.path.get(1));
-                    if (u != null)
-                        u.deleteFile(name);
-                }
+                String type=table1.getValueAt(row, 1).toString();
+                MFD.deletefile(name,type);
                 refreshList();
             }
         });
@@ -102,11 +93,13 @@ public class GUI {
             int row = table1.getSelectedRow();
             if (row != -1) {
                 String name = table1.getValueAt(row, 0).toString();
-                if (MFD.path.size() == 1)//双击打开文件夹
+                String type=table1.getValueAt(row, 1).toString();
+                if (type.equals("文件夹"))//双击打开文件夹
                 {
                     System.out.println(name);
                     open(name);
-                } else {//双击打开文件
+                } else if(type.equals("文件"))//双击打开文件
+                {
                     openFile(name);
                 }
             }
@@ -114,16 +107,16 @@ public class GUI {
         });
 
         JMenuItem fileproperty = new JMenuItem("属性");
-
         fileproperty.addActionListener(e -> {
             int row = table1.getSelectedRow();
             if (row != -1) {
                 String name = table1.getValueAt(row, 0).toString();
-                if (MFD.path.size() == 1) {
-                    UFD u = MFD.findUFDByname(name);
+                String type=table1.getValueAt(row, 1).toString();
+                if (type.equals("文件夹")) {
+                    Dir u = MFD.findDirByName(MFD.getNowDir(),name);
                     new FileProperty(rootpane, name, u, null, MFD.getPath() + "/" + name, u.property);
                 } else {
-                    UFD u = MFD.findUFDByname(MFD.path.get(1));
+                    Dir u = MFD.getNowDir();
                     FCB fcb = null;
                     for (FCB f : u.filelist)
                         if (f.filename.equals(name)) {
@@ -169,27 +162,28 @@ public class GUI {
             int type = e.getType();
             int row = e.getFirstRow();
             int col = e.getColumn();
+
             if (type == TableModelEvent.UPDATE) {
                 //System.out.println("行"+row+"列："+col);
                 //System.out.println(table1.getValueAt(row,col));
-                //System.out.println(table1.getValueAt(row,col));
-                if (MFD.path.size() == 1) {
-                    if (!MFD.rename(MFD.ufdlist.get(row), model.getValueAt(row, col).toString()))
-                        JOptionPane.showMessageDialog(null, "存在相同名字的文件,重命名失败", "提示", JOptionPane.ERROR_MESSAGE);
+                String newname=model.getValueAt(row,0).toString();
+                String Filetype=model.getValueAt(row,1).toString();
+                String oldname;
+                Dir d=MFD.getNowDir();
 
-                } else {
-                    UFD ufd = MFD.findUFDByname(MFD.path.get(1));
-                    if (ufd != null) {
-                        //System.out.println(row);
-                        FCB f = ufd.filelist.get(row);
-                        if (ufd.renameFile(f.filename, model.getValueAt(row, col).toString()) == -1) {
-                            JOptionPane.showMessageDialog(null, "存在相同名字的文件,重命名失败", "提示", JOptionPane.ERROR_MESSAGE);
+                if (Filetype.equals("文件夹"))
+                {
+                    oldname=d.childDirlist.get(row).Dirname;
+                }
+                else {
+                    oldname = d.filelist.get(row - d.childDirlist.size()).filename;
+                }
 
-                        }
-                    }
-
+                if (!MFD.rename(Filetype,oldname,newname)) {
+                    JOptionPane.showMessageDialog(null, "存在相同名字的文件,重命名失败", "提示", JOptionPane.ERROR_MESSAGE);
 
                 }
+
                 refreshList();
             }
         });
@@ -229,11 +223,8 @@ public class GUI {
                         popupMenu.add(fileproperty);
 
                     } else {//未选中文件或文件夹
-
-                        if (MFD.path.size() == 1)//只在根目录显示
-                            popupMenu.add(createDir);
-                        else//在二级目录显示
-                            popupMenu.add(createFile);
+                        popupMenu.add(createDir);
+                        popupMenu.add(createFile);
                     }
                     popupMenu.show(table1, e.getX(), e.getY());
                 }
@@ -262,9 +253,10 @@ public class GUI {
                 else if (buttonid == MouseEvent.BUTTON1 && clickcount == 2) {
                     if (focusedRowIndex != -1) {
                         String name = table1.getValueAt(focusedRowIndex, 0).toString();
-                        if (MFD.path.size() == 1)//双击打开文件夹
+                        String Filetype = table1.getValueAt(focusedRowIndex, 1).toString();
+                        if (Filetype.equals("文件夹"))//双击打开文件夹
                         {
-                            System.out.println(name);
+                            //System.out.println(name);
                             open(name);
                         } else {//双击打开文件
                             openFile(name);
@@ -281,20 +273,37 @@ public class GUI {
         reButton.addActionListener(e -> {
             MFD.rePath();
             refreshList();
-            reButton.setEnabled(false);
+            if(MFD.nowPath.size()==1)
+                reButton.setEnabled(false);
         });
 
-        initJtree();
+        initJTree();
         reButton.setEnabled(false);
         refreshpath();
     }
-
-    private void initJtree() {
-
-        root = new DefaultMutableTreeNode("root");
-        treemodel = new DefaultTreeModel(root);
-
+    private void initJTree()
+    {
+        root=new DefaultMutableTreeNode(MFD.root);
+        treemodel=new DefaultTreeModel(root);
         tree1.setModel(treemodel);
+    }
+    private void reBuildJtree(DefaultMutableTreeNode root,Dir droot) {
+
+        for(FCB f:droot.filelist)
+        {
+            DefaultMutableTreeNode node = new DefaultMutableTreeNode(f);
+            node.setAllowsChildren(false);
+            root.add(node);
+        }
+        for(Dir d:droot.childDirlist)
+        {
+
+            DefaultMutableTreeNode node = new DefaultMutableTreeNode(d);
+            node.setAllowsChildren(true);
+            root.add(node);
+            reBuildJtree(node,d);
+        }
+
     }
 
     //设置列表某一行背景色
@@ -328,34 +337,27 @@ public class GUI {
     private void open(String name) {
         MFD.openPath(name);
 
-        refreshList();
 
+        refreshList();
         reButton.setEnabled(true);
     }
 
     private void openFile(String name) {
         String content = "";
-        UFD ufd = null;
-        for (UFD u : MFD.ufdlist) {
 
-            if (u.username.equals(MFD.path.get(1))) {
-                try {
-                    content = u.openFile(name);
-                } catch (UnsupportedEncodingException ue) {
-                    ue.printStackTrace();
-                }
+        Dir nowDir=MFD.getNowDir();
 
-                ufd = u;
-                break;
-            }
-
+        try {
+            content=nowDir.openFile(name);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
-        if (ufd != null)
-            fileEditWindow(name, content, ufd);
+
+        fileEditWindow(name, content, nowDir);
     }
 
-    private void fileEditWindow(String name, String content, UFD ufd) {
-        if (ufd == null)
+    private void fileEditWindow(String name, String content, Dir dir) {
+        if (dir == null)
             return;
         JFrame frame = new JFrame(name);
         CreatFile cf = new CreatFile(content);
@@ -372,7 +374,7 @@ public class GUI {
                 int options = JOptionPane.showConfirmDialog(frame, "是否在关闭之前保存文件", "提示", JOptionPane.YES_NO_CANCEL_OPTION);
                 if (options == JOptionPane.YES_OPTION) {
                     try {
-                        ufd.xiugaiFilewords(name, text);
+                        dir.xiugaiFilewords(name, text);
                     } catch (UnsupportedEncodingException ue) {
                         ue.printStackTrace();
                     }
@@ -394,14 +396,8 @@ public class GUI {
     private void refreshtree() {
         root.removeAllChildren();
 
-        for (UFD u : MFD.ufdlist) {
-            DefaultMutableTreeNode node = new DefaultMutableTreeNode(u.username);
-            root.add(node);
-            for (FCB f : u.filelist) {
-                DefaultMutableTreeNode node2 = new DefaultMutableTreeNode(f.filename);
-                node.add(node2);
-            }
-        }
+        reBuildJtree(root,MFD.root);
+
         tree1.updateUI();
     }
 
@@ -413,27 +409,16 @@ public class GUI {
         int rowcount = model.getRowCount();
         for (int i = rowcount - 1; i >= 0; i--)
             model.removeRow(i);
+        String[][] filelist=MFD.getFilelist(MFD.getNowDir());
 
-        if (MFD.path.size() == 1) {
-            for (UFD u : MFD.ufdlist) {
-                Vector<String> Row = new Vector<>();
-                Row.add(u.username);
-                Row.add(u.type);
-                model.addRow(Row);
-            }
-        } else {
-            for (UFD u : MFD.ufdlist) {
-                if (u.username.equals(MFD.path.get(1))) {
-                    for (FCB f : u.filelist) {
-                        Vector<String> Row = new Vector<>();
-                        Row.add(f.filename);
-                        Row.add("文件");
-                        model.addRow(Row);
-                    }
-                    break;
-                }
-            }
+        for(String[] row:filelist)
+        {
+            Vector<String> Row = new Vector<>();
+            Row.add(row[0]);
+            Row.add(row[1]);
+            model.addRow(Row);
         }
+
         table1.updateUI();
         refreshtree();
         refreshpath();
@@ -442,24 +427,21 @@ public class GUI {
 
     private void createDir() {
         String name;
+        Dir nowDir=MFD.getNowDir();
         for (int i = 0; ; i++) {
             name = "新建文件夹";
             if (i != 0)
                 name += "(" + i + ")";
-            if (MFD.findUFDByname(name) == null)
+            if (MFD.findDirByName(nowDir,name)==null)
                 break;
         }
-        MFD.ufdlist.add(new UFD(name));
+        nowDir.childDirlist.add(new Dir(name));
         refreshList();
     }
 
     private void create_File() {
-        for (UFD u : MFD.ufdlist) {
-            if (u.username.equals(MFD.path.get(1))) {
-                u.filelist.add(u.createFile(MFD.getPath()));
-                break;
-            }
-        }
+        Dir nowDir=MFD.getNowDir();
+        nowDir.createFile(MFD.getPath());
         refreshList();
         table1.editCellAt(table1.getRowCount() - 1, 0);
     }

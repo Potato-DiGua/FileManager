@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.UnsupportedEncodingException;
 
 public class FileProperty {
     public JPanel rootpane;
@@ -11,7 +10,7 @@ public class FileProperty {
     private JLabel locationlabel;
     private JComboBox comboBox1;
     private String filename;
-    public FileProperty(Component parent, String name,UFD u,FCB f,String path,String property)
+    public FileProperty(Component parent, String name, Dir u, FCB f, String path, String property)
     {
         if(u==null)
             return;
@@ -58,15 +57,15 @@ public class FileProperty {
                 String newname=namejtf.getText();
                 if(!newname.equals(filename))
                 {
-                    if(f==null)
+                    if(f==null)//文件夹
                     {
-                        if(!MFD.rename(u,newname));
+                        if(!MFD.rename("文件夹",filename,newname));
                             JOptionPane.showMessageDialog(null, "存在相同名字的文件,重命名失败", "提示", JOptionPane.ERROR_MESSAGE);
 
                     }
-                    else
+                    else//文件
                     {
-                        if (u.renameFile(f.filename, newname) == -1) {
+                        if (!MFD.rename("文件",filename,newname)) {
                             JOptionPane.showMessageDialog(null, "存在相同名字的文件,重命名失败", "提示", JOptionPane.ERROR_MESSAGE);
 
                         }
