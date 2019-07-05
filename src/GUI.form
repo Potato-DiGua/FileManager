@@ -65,7 +65,7 @@
                 <clientProperties>
                   <JTable.autoStartsEdit class="java.lang.Boolean" value="false"/>
                   <Table.isFileList class="java.lang.Boolean" value="false"/>
-                  <terminateEditOnFocusLost class="java.lang.Boolean" value="true"/>
+                  <terminateEditOnFocusLost class="java.lang.Boolean" value="false"/>
                 </clientProperties>
               </component>
             </children>
