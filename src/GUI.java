@@ -7,6 +7,11 @@ import java.awt.event.*;
 import java.io.UnsupportedEncodingException;
 import java.util.Vector;
 
+/**
+ * UI
+ */
+
+
 public class GUI {
 
 
@@ -260,14 +265,15 @@ public class GUI {
                 if(node.getUserObject().getClass().getName().equals(Dir.class.getName()))
                 {
                     TreeNode[] path=node.getPath();
-                    String pathstr="";
+                    StringBuilder pathtotal=new StringBuilder();
                     for(TreeNode treeNode:path)
                     {
-                        pathstr+="/"+treeNode.toString();
+                        pathtotal.append("/");
+                        pathtotal.append(treeNode.toString());
                     }
                     //System.out.println(pathstr);
 
-                    if(MFD.findDirByPath(pathstr)!=null)
+                    if(MFD.findDirByPath(pathtotal.toString())!=null)
                     {
                         refreshList();
                         refreshpath();
