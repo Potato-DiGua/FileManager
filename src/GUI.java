@@ -169,6 +169,7 @@ public class GUI {
         });
         */
 
+        //重命名
         //将表格的修改内容更新到文件系统
         model.addTableModelListener(e ->  {
                 int type=e.getType();
@@ -215,10 +216,9 @@ public class GUI {
 
                 if(focusedRowIndex==-1)//鼠标未选中 清空选中项 停止输入
                 {
-                    table1.clearSelection();
-
                     if (table1.isEditing())
                         table1.getCellEditor().stopCellEditing();
+                    table1.clearSelection();
                 }
                 //右键菜单显示
                 if (buttonid == MouseEvent.BUTTON3)
