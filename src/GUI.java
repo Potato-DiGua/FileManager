@@ -27,6 +27,7 @@ public class GUI {
     private Color focuscolor=new Color(0xC6E2FF);
     private JTextField jtf=new JTextField();
     private DefaultMutableTreeNode root;//文件树的根目录
+    private DefaultTreeModel treemodel;
     public GUI() {
         //设置当前路径为根目录
         MFD.openPath("root");
@@ -296,7 +297,8 @@ public class GUI {
     {
 
         root=new DefaultMutableTreeNode("root");
-        DefaultTreeModel treemodel=new DefaultTreeModel(root);
+        treemodel=new DefaultTreeModel(root);
+
         tree1.setModel(treemodel);
     }
     //设置列表某一行背景色
@@ -399,8 +401,8 @@ public class GUI {
         frame.setVisible(true);
     }
     private void refreshtree(){
-        for(int i=0;i<root.getChildCount();i++)
-            root.remove(i);
+        root.removeAllChildren();
+
         for(UFD u:MFD.ufdlist)
         {
             DefaultMutableTreeNode node=new DefaultMutableTreeNode(u.username);

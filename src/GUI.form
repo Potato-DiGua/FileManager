@@ -55,7 +55,7 @@
                   <autoCreateRowSorter value="false"/>
                   <fillsViewportHeight value="true"/>
                   <focusTraversalPolicyProvider value="false"/>
-                  <font size="18"/>
+                  <font name="Droid Sans Mono Slashed" size="18" style="0"/>
                   <intercellSpacing width="3" height="5"/>
                   <rowHeight value="30"/>
                   <rowMargin value="5"/>
