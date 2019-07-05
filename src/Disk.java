@@ -38,11 +38,11 @@ public class Disk {
                     useblock.nextBlock.lastBlock=useblock.lastBlock;//下一节点的上一个节点是使用节点的上一个节点
                 }
                 else
-                if(useblock.equals(firstblock)) {//使用的节点是firstblock
+                if(useblock!=firstblock) {//使用的节点是firstblock
                     firstblock=firstblock.nextBlock;//firstblock往后移
                 }
             }else
-            if(useblock.nextBlock==null) {//下一节点是空的
+            {//下一节点是空的
                 useblock.lastBlock.nextBlock=null;//上一节点的下一节点是空节点
             }
         }
