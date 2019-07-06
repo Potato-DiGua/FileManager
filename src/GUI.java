@@ -29,10 +29,12 @@ public class GUI {
     private Vector<Vector> data = new Vector<>();
     private JPopupMenu popupMenu = new JPopupMenu();
     private DefaultTableModel model;
-    private Color focuscolor = new Color(0xC6E2FF);
+    public static Color focuscolor = new Color(0xC6E2FF);
+    public static Color selectcolor=new Color(12, 175, 170);
     private JTextField jtf = new JTextField();
     private DefaultMutableTreeNode root;//文件树的根目录
     private DefaultTreeModel treemodel;
+    private FileJTableRenderer ftr;//自定义Jtable渲染器
 
     public GUI() {
         //设置当前路径为根目录
@@ -65,8 +67,9 @@ public class GUI {
         //设置table1单击开始编辑
         dfc.setClickCountToStart(1);
         table1.setDefaultEditor(table1.getColumnClass(0), dfc);
-        FileJTableRenderer ftr=new FileJTableRenderer();
-        table1.setDefaultRenderer(table1.getColumnClass(0),new FileJTableRenderer());
+        ftr=new FileJTableRenderer(-1);
+
+        table1.setDefaultRenderer(table1.getClass(),ftr);
 
         //失去焦点时保存正在编辑的内容
         table1.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
@@ -145,7 +148,7 @@ public class GUI {
 
         });
 
-        /*
+
         table1.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             //修改焦点所在行颜色
@@ -153,21 +156,21 @@ public class GUI {
                 if (table1.isEditing())
                     return;
                 super.mouseMoved(e);
-                //System.out.println(e.getPoint());
+                System.out.println(e.getPoint());
                 int focusedRowIndex = table1.rowAtPoint(e.getPoint());
                 //鼠标是否超出Jtable边界
+                System.out.println(focusedRowIndex);
                 if (!table1.contains(e.getPoint()))
-                    setOneRowBackgroundColor(table1, -1, focuscolor);
-                else {
-                    if (focusedRowIndex != -1) {
-                        setOneRowBackgroundColor(table1, focusedRowIndex, focuscolor);
-                    } else {
-                        setOneRowBackgroundColor(table1, -1, focuscolor);
-                    }
+                {
+                    setRowBackgroundColor(-1);
                 }
+                else
+                    setRowBackgroundColor(focusedRowIndex);
+
+
 
             }
-        });*/
+        });
 
 
         //重命名
@@ -342,34 +345,15 @@ public class GUI {
 
     }
 
-    //设置列表某一行背景色
-    /*public static void setOneRowBackgroundColor(JTable table, int rowIndex,
-                                                Color color) {
-        try {
-            DefaultTableCellRenderer tcr = new DefaultTableCellRenderer() {
-
-                public Component getTableCellRendererComponent(JTable table,
-                                                               Object value, boolean isSelected, boolean hasFocus,
-                                                               int row, int column) {
-                    if (row == rowIndex) {
-                        setBackground(color);
-                    } else {
-                        setBackground(Color.white);
-                    }
-                    return super.getTableCellRendererComponent(table, value,
-                            isSelected, hasFocus, row, column);
-                }
-            };
-            int columnCount = table.getColumnCount();
-            for (int i = 0; i < columnCount; i++) {
-                table.getColumn(table.getColumnName(i)).setCellRenderer(tcr);
-            }
-            table.updateUI();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+    //刷新列表背景色
+    public void setRowBackgroundColor(int focusOnRow)
+    {
+        for (int i = 0; i < table1.getColumnCount(); i++) {
+            table1.getColumn(table1.getColumnName(i)).setCellRenderer(new FileJTableRenderer(focusOnRow));
         }
+        table1.updateUI();
     }
-*/
+
     private void open(String name) {
         MFD.openPath(name);
 
@@ -464,7 +448,7 @@ public class GUI {
             Row.add(row[1]);
             model.addRow(Row);
         }
-
+        table1.setDefaultRenderer(table1.getClass(),ftr);
         table1.updateUI();
 
     }
@@ -504,8 +488,7 @@ public class GUI {
         JFrame frame = new JFrame("文件管理");
         frame.setContentPane(new GUI().rootpane);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        new FileJTableRenderer();
-        //frame.add(new JLabel(new FileJTableRenderer()));
+
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
