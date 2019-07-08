@@ -32,6 +32,12 @@
               <requestFocusEnabled value="true"/>
             </properties>
           </component>
+          <component id="e09dd" class="javax.swing.JButton" binding="diaodubtn">
+            <constraints/>
+            <properties>
+              <text value="磁盘调度"/>
+            </properties>
+          </component>
         </children>
       </grid>
       <grid id="6bdfe" binding="listjp" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">

@@ -4,7 +4,6 @@ import javax.swing.table.*;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Vector;
 
@@ -26,6 +25,7 @@ public class GUI {
     private JTree tree1;
     private JScrollPane jsp2;
     private JTextField pathinput;
+    private JButton diaodubtn;
     private Vector<String> columnNname = new Vector<>();
     private Vector<Vector> data = new Vector<>();
     private JPopupMenu popupMenu = new JPopupMenu();
@@ -47,6 +47,7 @@ public class GUI {
         columnNname.add("名称");
         columnNname.add("类型");
 
+        diaodubtn.addActionListener(e -> new DiaoDU());
 
         model = new DefaultTableModel(data, columnNname) {
             @Override
