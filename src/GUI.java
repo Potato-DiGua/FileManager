@@ -161,10 +161,10 @@ public class GUI {
                 if (table1.isEditing())
                     return;
                 super.mouseMoved(e);
-                System.out.println(e.getPoint());
+                //System.out.println(e.getPoint());
                 int focusedRowIndex = table1.rowAtPoint(e.getPoint());
                 //鼠标是否超出Jtable边界
-                System.out.println(focusedRowIndex);
+                //System.out.println(focusedRowIndex);
                 if (!table1.contains(e.getPoint()))
                 {
                     setRowBackgroundColor(-1);

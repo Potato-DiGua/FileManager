@@ -80,6 +80,7 @@ public class FileProperty {
 
                         }
                     }
+
                 }
                 frame.dispose();
                 mainWindow.refresh();
