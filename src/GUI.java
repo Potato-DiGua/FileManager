@@ -4,6 +4,7 @@ import javax.swing.table.*;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Vector;
 
@@ -37,11 +38,15 @@ public class GUI {
     private FileJTableRenderer ftr;//自定义Jtable渲染器
 
     public GUI() {
+
+
+
         //设置当前路径为根目录
         MFD.nowPath.add(MFD.root);
 
         columnNname.add("名称");
         columnNname.add("类型");
+
 
         model = new DefaultTableModel(data, columnNname) {
             @Override
@@ -485,10 +490,13 @@ public class GUI {
             e.printStackTrace();
         }
 
-        JFrame frame = new JFrame("文件管理");
-        frame.setContentPane(new GUI().rootpane);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JPanel rootPanel=new GUI().rootpane;
 
+
+        JFrame frame = new JFrame("文件管理");
+        frame.setContentPane(rootPanel);
+
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);

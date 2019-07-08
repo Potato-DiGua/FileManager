@@ -8,6 +8,8 @@ public class Disk {
 			disk[q]=null;
 		}*/
 		if((i.start+i.length)==firstblock.start) {//删除的文件正好可以和firstblock合并
+
+		    firstblock.length=firstblock.length+i.length;
 			firstblock.start=i.start;
 		}else
 		{
