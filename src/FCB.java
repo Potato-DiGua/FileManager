@@ -56,7 +56,7 @@ public class FCB {
     		return "";
     	}
     	byte temp[]=new byte[length];
-    	int num=length/512;    	
+    	int num=length/512;
     	for(int x=0;x<num;x++) {//512一组开始读取		
 			System.arraycopy(Disk.disk[block.start+x],0,temp,x*512,512);
 		}

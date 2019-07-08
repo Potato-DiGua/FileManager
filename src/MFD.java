@@ -58,7 +58,19 @@ public class MFD {
         }
         return null;
     }
-
+    public static long getDirSize(Dir d)
+    {
+        long size=0;
+        for(FCB f:d.filelist)
+        {
+            size+=f.length;
+        }
+        for(Dir dir:d.childDirlist)
+        {
+            size+=getDirSize(dir);
+        }
+        return size;
+    }
     private static Dir find(Dir Root,ArrayList<String> names,int i)
     {
 

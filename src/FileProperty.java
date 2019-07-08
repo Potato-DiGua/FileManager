@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.text.DecimalFormat;
 
 public class FileProperty {
     public JPanel rootpane;
@@ -9,7 +10,10 @@ public class FileProperty {
     private JLabel typeLabel;
     private JLabel locationlabel;
     private JComboBox comboBox1;
+    private JLabel sizelabel;
     private String filename;
+    private static long kb=1024;
+    private static long mb=1048576;
     public FileProperty(GUI mainWindow,Component parent, String name, Dir u, FCB f, String path, String property)
     {
         if(u==null)
@@ -18,11 +22,17 @@ public class FileProperty {
         namejtf.setText(name);
 
         if(f!=null)
+        {
             typeLabel.setText("文件");
-        else
+            sizelabel.setText(getSizeStr(f.length));
+
+        }
+        else {
+
+            sizelabel.setText(getSizeStr(MFD.getDirSize(u)));
             typeLabel.setText("文件夹");
 
-
+        }
         locationlabel.setText(path);
         comboBox1.addItem("只读");
         comboBox1.addItem("读取/写入");
@@ -78,5 +88,21 @@ public class FileProperty {
         frame.pack();
         frame.setLocationRelativeTo(parent);
         frame.setVisible(true);
+    }
+    private String getSizeStr(long size)
+    {
+        DecimalFormat decimalFormat=new DecimalFormat(".00");
+        if(size<kb)
+        {
+            return size+"B";
+        }
+        else if(size<mb)
+        {
+            return decimalFormat.format(size/kb)+"KB";
+        }
+        else
+        {
+            return decimalFormat.format(size/mb)+"MB";
+        }
     }
 }
