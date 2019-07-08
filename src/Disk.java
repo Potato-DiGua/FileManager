@@ -2,13 +2,16 @@ public class Disk {
 	public static Block firstblock=new Block(0,1024);
 	public static byte[][] disk=new byte[1024][512];
 	public static void disk_deletefile(Block i) {
-		if(i.length==0)
-			return;
+		if(i.length==0){
+            return;
+        }
+
 		/*for(int q=i.block.start;q<i.block.start+i.block.length;q++) {//清空所使用的disk
 			disk[q]=null;
 		}*/
 		if((i.start+i.length)==firstblock.start) {//删除的文件正好可以和firstblock合并
 			firstblock.start=i.start;
+			firstblock.length+=i.length;
 		}else
 		{
 			Block temp=new Block(i.start,i.length);
