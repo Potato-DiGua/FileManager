@@ -18,10 +18,11 @@ public class FileJTreeRenderer extends DefaultTreeCellRenderer {
         {
             this.setIcon(diricon);
         }
+        /*
         else if(classname.equals(FCB.class.getName()))
         {
             this.setIcon(fileicon);
-        }
+        }*/
         return this;
     }
 }

@@ -137,7 +137,7 @@ public class GUI {
                 String type=table1.getValueAt(row, 1).toString();
                 if (type.equals("文件夹")) {
                     Dir u = MFD.findDirByName(MFD.getNowDir(),name);
-                    new FileProperty(this,rootpane, name, u, null, MFD.getPath() + "/" + name, u.property);
+                    new FileProperty(this,rootpane, name, u, null, MFD.getPath(), u.property);
                 } else {
                     Dir u = MFD.getNowDir();
                     FCB fcb = null;
@@ -146,7 +146,7 @@ public class GUI {
                             fcb = f;
                             break;
                         }
-                    new FileProperty(this,rootpane, name, u, fcb, MFD.getPath() + "/" + name, fcb.shuxing);
+                    new FileProperty(this,rootpane, name, u, fcb, MFD.getPath(), fcb.shuxing);
                 }
 
 
