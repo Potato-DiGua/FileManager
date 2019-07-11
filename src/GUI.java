@@ -333,13 +333,13 @@ public class GUI {
         tree1.setCellRenderer(new FileJTreeRenderer());
     }
     private void reBuildJtree(DefaultMutableTreeNode root,Dir droot) {
-
+/*添加文件
         for(FCB f:droot.filelist)
         {
             DefaultMutableTreeNode node = new DefaultMutableTreeNode(f);
             node.setAllowsChildren(false);
             root.add(node);
-        }
+        }*/
         for(Dir d:droot.childDirlist)
         {
 
