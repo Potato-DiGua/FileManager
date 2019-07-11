@@ -272,8 +272,6 @@ public class GUI {
             DefaultMutableTreeNode node=(DefaultMutableTreeNode)tree1.getLastSelectedPathComponent();
             if(node!=null)
             {
-                if(node.getUserObject().getClass().getName().equals(Dir.class.getName()))
-                {
                     TreeNode[] path=node.getPath();
                     StringBuilder pathtotal=new StringBuilder();
                     for(TreeNode treeNode:path)
@@ -288,9 +286,6 @@ public class GUI {
                         refreshList();
                         refreshpath();
                     }
-
-
-                }
             }
             else
                 tree1.clearSelection();
