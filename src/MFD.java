@@ -24,6 +24,8 @@ public class MFD {
 
         ArrayList<String> names= new ArrayList<>(Arrays.asList(path.split("/")));
 
+        if(names.size()==0)
+            return null;
         if(names.get(0).isEmpty())
             names.remove(0);//分割路径后第一个对象为空所以删除
 
