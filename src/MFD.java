@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -135,6 +136,11 @@ public class MFD {
     public static void deletefile(String name,String Filetype)//
     {
         Dir t=nowPath.get(nowPath.size()-1);
+        if(t.property.equals("r"))
+        {
+            JOptionPane.showMessageDialog(null,"该文件夹为只读文件夹,禁止创建或删除");
+            return;
+        }
         if(Filetype.equals("文件"))
         {
             t.deleteFile(name);
@@ -146,6 +152,7 @@ public class MFD {
                 t.childDirlist.remove(d);
         }
     }
+
     public static boolean rename(String Filetype,String oldname, String newname)
     {
         if(oldname.equals(newname))

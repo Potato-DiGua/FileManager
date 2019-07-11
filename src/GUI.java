@@ -457,6 +457,11 @@ public class GUI {
     private void createDir() {
         String name;
         Dir nowDir=MFD.getNowDir();
+        if(nowDir.property.equals("r"))
+        {
+            JOptionPane.showMessageDialog(null,"该文件夹为只读文件夹,禁止创建或删除");
+            return;
+        }
         for (int i = 0; ; i++) {
             name = "新建文件夹";
             if (i != 0)
@@ -470,6 +475,11 @@ public class GUI {
 
     private void create_File() {
         Dir nowDir=MFD.getNowDir();
+        if(nowDir.property.equals("r"))
+        {
+            JOptionPane.showMessageDialog(null,"该文件夹为只读文件夹,禁止创建或删除");
+            return;
+        }
         nowDir.createFile(MFD.getPath());
         refresh();
         table1.editCellAt(table1.getRowCount() - 1, 0);
